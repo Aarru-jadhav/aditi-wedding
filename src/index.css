@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@keyframes nameReveal {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -40%) scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.animate-name-reveal {
+  opacity: 0;
+  animation: nameReveal 1.5s ease-out 3s forwards;
+}
