@@ -117,7 +117,7 @@ const StackCards = () => {
   return (
     <section
       ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden bg-[#F2EADF]"
+      className="relative h-screen w-full overflow-hidden bg-white"
     >
 
       {/* STATIC HEADING - CARDS KE BAHAR */}
