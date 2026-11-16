@@ -49,26 +49,25 @@ const Page1 = () => {
 
         {/* Wedding Logo */}
         <img
-          src={weddingLogo}
-          alt="Wedding Logo"
-          className="
-            w-[clamp(80px,12vw,110px)]
-            max-h-[12vh]
-            h-auto
-            object-contain
-            mx-auto
-            mb-2
-            align-center
-          "
-          loading="eager"
-          fetchPriority="high"
-        />
+  src={weddingLogo}
+  alt="Wedding Logo"
+  className="
+    w-[clamp(90px,20vw,110px)]
+    max-h-[12vh]
+    h-auto
+    object-contain
+    mx-auto
+    mb-2
+  "
+  loading="eager"
+  fetchPriority="high"
+/>
 
         {/* Wedding Heading */}
         <p
           className="
             text-[#8b4b2b]
-            text-[clamp(12px,1.4vw,13px)]
+            text-[clamp(14px,1.4vw,13px)]
             tracking-[0.15em]
             mb-[1.5vh]
           "
@@ -81,7 +80,7 @@ const Page1 = () => {
           className="
             font-serif
             text-[#8b4b2b]
-            text-[clamp(18px,4vw,42px)]
+            text-[clamp(22px,4vw,42px)]
             leading-tight
           "
         >
@@ -91,7 +90,7 @@ const Page1 = () => {
             className="
               block
               text-[#b68b45]
-              text-[clamp(16px,3vw,30px)]
+              text-[clamp(20px,3vw,30px)]
               my-[1vh]
             "
           >
