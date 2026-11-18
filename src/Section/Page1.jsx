@@ -3,6 +3,7 @@ import React, { useRef, useState } from "react";
 
 import palacePoster from "../assets/Images/palace.png";
 import palaceVideo from "../assets/Video/wedding-hero.mp4";
+import WeddingLogo from "../assets/Images/Wedding logo.webp";
 
 export default function Page1() {
   const videoRef = useRef(null);
@@ -13,8 +14,8 @@ export default function Page1() {
   const [videoFinished, setVideoFinished] = useState(false);
 
   // Change names here
-  const brideName = "Aarav";
-  const groomName = "Shanaya";
+  const brideName = "Aditi";
+  const groomName = "Somya";
 
   const handleEnter = async () => {
     const video = videoRef.current;
@@ -79,7 +80,7 @@ export default function Page1() {
           poster={palacePoster}
           playsInline
           preload="auto"
-          muted={false}
+          muted={true}
           onTimeUpdate={handleTimeUpdate}
           onEnded={handleVideoEnd}
           onError={() => {
@@ -133,30 +134,39 @@ export default function Page1() {
           </div>
         )}
 
-        {/* COUPLE NAMES REVEAL */}
-        <div
-          className={`pointer-events-none absolute left-0 right-0 top-[12%] z-20 flex flex-col items-center text-center transition-all duration-[1500ms] ease-out ${
-            showNames
-              ? "translate-y-0 scale-100 opacity-100"
-              : "-translate-y-8 scale-95 opacity-0"
-          }`}
-        >
-          <p className="mb-3 font-serif text-[9px] tracking-[0.45em] text-[#F8E8C5] drop-shadow-md">
-            TOGETHER WITH THEIR FAMILIES
-          </p>
+        {/* COUPLE LOGO + NAMES REVEAL */}
 
-          <h1 className="font-serif text-3xl font-normal text-[#FFF0D2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.65)] sm:text-4xl">
-            {brideName}
-            <span className="mx-2 text-[#E5C078]">&</span>
-            {groomName}
-          </h1>
+{/* CENTERED LOGO + NAMES REVEAL */}
+<div
+  className={`pointer-events-none absolute left-0 right-0 top-[1%] z-40 flex flex-col items-center justify-start text-center transition-all duration-[1500ms] ease-out ${
+    showNames
+      ? "translate-y-0 scale-100 opacity-100"
+      : "-translate-y-8 scale-95 opacity-0"
+  }`}
+>
+  {/* WEDDING LOGO */}
+  <img
+    src={WeddingLogo}
+    alt="Wedding Logo"
+    className="mb-2 h-auto w-32 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.4)] sm:w-28"
+  />
 
-          <div className="mt-4 flex items-center gap-3">
-            <span className="h-px w-8 bg-[#D9B76B]" />
-            <span className="text-xs text-[#F1D08B]">✦</span>
-            <span className="h-px w-8 bg-[#D9B76B]" />
-          </div>
-        </div>
+  {/* FAMILY MESSAGE */}
+  <p className="mb-2 font-['Dancing_Script'] text-[8px] tracking-[0.35em] text-[#F8E8C5] drop-shadow-md sm:text-[10px]">
+    TOGETHER WITH THEIR FAMILIES
+  </p>
+
+  {/* COUPLE NAMES */}
+  <h1 className="font-['Dancing_Script'] text-3xl font-normal text-[#FFF0D2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.65)] sm:text-4xl">
+    {brideName}
+    <span className="mx-2 text-[#E5C078]">&</span>
+    {groomName}
+  </h1>
+
+  {/* DIVIDER */}
+  
+</div>
+
 
         {/* ENDING DARK GRADIENT */}
         <div
