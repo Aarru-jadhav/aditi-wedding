@@ -1,263 +1,318 @@
+import React, { useEffect, useRef, useState } from "react";
 
-import React, { useLayoutEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-import haldiImage from "../assets/Images/haldi.jpg";
-import mehndiImage from "../assets/Images/mehndi.jpg";
-import galaImage from "../assets/Images/gala.jpg";
-import receptionImage from "../assets/Images/reception.jpg";
-
-gsap.registerPlugin(ScrollTrigger);
-
-const cardsData = [
+const DEFAULT_CARDS = [
   {
-    title: "Haldi",
-    number: "01",
-    date: "12 Feb 2027",
-    time: "10:00 AM",
-    venue: "Pine Courtyard",
-    wear: "Yellow",
-    bgImage: haldiImage,
-    accent: "#B69B70",
-    mapsQuery: "Pine Courtyard",
+    id: 1,
+    title: "GREAT WALL OF CHINA",
+    description:
+      "A vast defensive structure built over centuries to protect Chinese states across northern China.",
+    image:
+      "https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=900&q=80",
   },
   {
-    title: "Mehndi",
-    number: "02",
-    date: "13 Feb 2027",
-    time: "04:00 PM",
-    venue: "Venue Name",
-    wear: "Green",
-    bgImage: mehndiImage,
-    accent: "#849276",
-    mapsQuery: "Venue Name",
+    id: 2,
+    title: "CHRIST THE REDEEMER",
+    description:
+      "A monumental statue overlooking Rio de Janeiro, symbolizing both Christianity and Brazil's global identity.",
+    image:
+      "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=900&q=80",
   },
   {
-    title: "Gala Dinner",
-    number: "03",
-    date: "13 Feb 2027",
-    time: "07:00 PM",
-    venue: "Venue Name",
-    wear: "Elegant Evening",
-    bgImage: galaImage,
-    accent: "#B18B60",
-    mapsQuery: "Venue Name",
+    id: 3,
+    title: "TAJ MAHAL",
+    description:
+      "An ivory-white marble mausoleum built as a symbol of love, combining architectural symmetry with craftsmanship.",
+    image:
+      "https://images.unsplash.com/photo-1564507592333-c60657eea523?auto=format&fit=crop&w=900&q=80",
   },
   {
-    title: "Reception",
-    number: "04",
-    date: "14 Feb 2027",
-    time: "07:00 PM",
-    venue: "Venue Name",
-    wear: "Formal",
-    bgImage: receptionImage,
-    accent: "#A7865B",
-    mapsQuery: "Venue Name",
+    id: 4,
+    title: "PETRA TREASURY",
+    description:
+      "An ancient city carved directly into rose-red sandstone cliffs, famous for its rock-cut architecture.",
+    image:
+      "https://images.unsplash.com/photo-1579606032821-4e6161c56a0e?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: 5,
+    title: "MACHU PICCHU",
+    description:
+      "A 15th-century Inca citadel set high in the Andes Mountains above the Sacred Valley in Peru.",
+    image:
+      "https://images.unsplash.com/photo-1587595431973-160d0d94add1?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    id: 6,
+    title: "PYRAMIDS OF GIZA",
+    description:
+      "Ancient monumental tombs built on the Giza plateau, standing as enduring landmarks of human engineering.",
+    image:
+      "https://images.unsplash.com/photo-1539650116574-8efeb43e2750?auto=format&fit=crop&w=900&q=80",
   },
 ];
 
-const StackCards = () => {
-  const sectionRef = useRef(null);
+export default function StackCards({
+  cards = DEFAULT_CARDS,
+  speed = 0.00045, // continuous scroll speed (cards per ms)
+  cardWidth = 175,
+  cardHeight = 290,
+  spacing = 195, // horizontal distance between card centers
+  arcDepth = 42, // vertical curve depth along the arc
+  pauseOnHover = true,
+}) {
+  const count = cards.length;
+  const progressRef = useRef(0); // continuous float index
+  const lastTimeRef = useRef(null);
+  const rafRef = useRef(null);
+  const isPausedRef = useRef(false);
+  const dragStateRef = useRef({
+    dragging: false,
+    startX: 0,
+    startProgress: 0,
+  });
 
-  useLayoutEffect(() => {
-    const ctx = gsap.context(() => {
-      const cards = gsap.utils.toArray(".stack-card");
+  const [tick, setTick] = useState(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-      cards.forEach((card, index) => {
-        if (index === 0) return;
+  // Shortest circular offset in [-count/2, count/2]
+  const getCircularOffset = (index, currentProgress) => {
+    let diff = (index - currentProgress) % count;
+    if (diff > count / 2) diff -= count;
+    if (diff < -count / 2) diff += count;
+    return diff;
+  };
 
-        gsap.set(card, {
-          yPercent: 100,
-        });
-      });
+  useEffect(() => {
+    if (!count) return;
 
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top top",
-          end: `+=${cards.length * 100}%`,
-          pin: true,
-          scrub: 1,
-          anticipatePin: 1,
-        },
-      });
+    const animate = (timestamp) => {
+      if (lastTimeRef.current == null) {
+        lastTimeRef.current = timestamp;
+      }
+      const delta = timestamp - lastTimeRef.current;
+      lastTimeRef.current = timestamp;
 
-      cards.forEach((card, index) => {
-        if (index === 0) return;
+      if (!isPausedRef.current && !dragStateRef.current.dragging) {
+        progressRef.current = (progressRef.current + delta * speed) % count;
+        if (progressRef.current < 0) progressRef.current += count;
+      }
 
-        const previousCard = cards[index - 1];
+      // Find card closest to center (offset = 0)
+      let closestIdx = 0;
+      let minDist = Infinity;
+      for (let i = 0; i < count; i++) {
+        const dist = Math.abs(getCircularOffset(i, progressRef.current));
+        if (dist < minDist) {
+          minDist = dist;
+          closestIdx = i;
+        }
+      }
+      setActiveIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
+      setTick((t) => (t + 1) % 1000000);
 
-        timeline.to(
-          previousCard,
-          {
-            scale: 0.88,
-            opacity: 0.45,
-            duration: 1,
-            ease: "none",
-          },
-          index - 1
-        );
+      rafRef.current = requestAnimationFrame(animate);
+    };
 
-        timeline.to(
-          card,
-          {
-            yPercent: 0,
-            duration: 1,
-            ease: "none",
-          },
-          index - 1
-        );
-      });
-    }, sectionRef);
+    rafRef.current = requestAnimationFrame(animate);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      lastTimeRef.current = null;
+    };
+  }, [count, speed]);
 
-    return () => ctx.revert();
-  }, []);
+  const handlePointerDown = (e) => {
+    dragStateRef.current = {
+      dragging: true,
+      startX: e.clientX,
+      startProgress: progressRef.current,
+    };
+  };
+
+  const handlePointerMove = (e) => {
+    if (!dragStateRef.current.dragging) return;
+    const dx = e.clientX - dragStateRef.current.startX;
+    let next = dragStateRef.current.startProgress - dx / spacing;
+    next = ((next % count) + count) % count;
+    progressRef.current = next;
+  };
+
+  const handlePointerUp = () => {
+    dragStateRef.current.dragging = false;
+  };
+
+  const activeCard = cards[activeIndex] || cards[0];
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden bg-white"
+    <div
+      style={{
+        width: "100%",
+        maxWidth: "960px",
+        margin: "0 auto",
+        padding: "28px 16px 36px",
+        background: "#ffffff",
+        color: "#111827",
+        fontFamily:
+          'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        userSelect: "none",
+      }}
+      onMouseEnter={() => {
+        if (pauseOnHover) isPausedRef.current = true;
+      }}
+      onMouseLeave={() => {
+        if (pauseOnHover) isPausedRef.current = false;
+        dragStateRef.current.dragging = false;
+      }}
     >
-
-      {/* STATIC HEADING - CARDS KE BAHAR */}
-      <div className="absolute top-[5%] left-0 z-50 w-full px-4 text-center">
-
-        <p className="font-serif italic text-[#A58A66]
-          text-xl sm:text-2xl mb-2">
-          Our Wedding
-        </p>
-
-        <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl
-          text-[#6B4E3D] tracking-wide">
-          When & Where
+      {/* Dynamic Header synced with center/active card */}
+      <div
+        style={{
+          textAlign: "center",
+          maxWidth: "640px",
+          margin: "0 auto 14px",
+          minHeight: "82px",
+        }}
+      >
+        <h2
+          style={{
+            margin: "0 0 6px",
+            fontSize: "24px",
+            fontWeight: 800,
+            letterSpacing: "0.06em",
+            textTransform: "uppercase",
+            color: "#111827",
+          }}
+        >
+          {activeCard?.title}
         </h2>
-
-        {/* Decorative Divider */}
-       
+        <p
+          style={{
+            margin: 0,
+            fontSize: "13.5px",
+            lineHeight: 1.45,
+            color: "#4b5563",
+          }}
+        >
+          {activeCard?.description}
+        </p>
       </div>
 
-      {/* EVENT CARDS */}
-      <div className="absolute inset-0">
+      {/* Continuous Curved Cards Stage */}
+      <div
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        style={{
+          position: "relative",
+          width: "100%",
+          height: `${cardHeight + arcDepth * 2 + 24}px`,
+          overflow: "hidden",
+          cursor: dragStateRef.current.dragging ? "grabbing" : "grab",
+          touchAction: "pan-y",
+        }}
+      >
+        {/* Top curved mask matching video's curved arc edge */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            top: "-135px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "145%",
+            height: "175px",
+            borderRadius: "50%",
+            background: "#ffffff",
+            zIndex: 30,
+            pointerEvents: "none",
+          }}
+        />
 
-        {cardsData.map((item, index) => (
-          <div
-            key={item.number}
-           className="stack-card absolute top-[22%] bottom-[5%]
-  left-0 right-0 flex items-end justify-center
-  overflow-hidden rounded-[30px] sm:rounded-[40px]
-  px-4 pb-8 sm:px-8 sm:pb-12"
-            style={{
-              zIndex: index + 1,
-            }}
-          >
+        {/* Cards Layer */}
+        <div
+          data-frame={tick}
+          style={{
+            position: "relative",
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          {cards.map((card, index) => {
+            const offset = getCircularOffset(index, progressRef.current);
+            const absOffset = Math.abs(offset);
 
-            {/* INDIVIDUAL CARD BACKGROUND IMAGE */}
-            <div
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat rounded-[30px] sm:rounded-[40px] overflow-hidden"
-              style={{
-                backgroundImage: `url(${item.bgImage})`,
-              }}
-            />
+            // Hide cards far outside visible window
+            if (absOffset > Math.max(3.2, count / 2 + 0.5)) {
+              return null;
+            }
 
-            {/* LIGHT IMAGE OVERLAY */}
-            <div className="absolute inset-0 bg-[#F3E9DC]/10" />
+            const x = offset * spacing;
+            // Parabola curve: center (offset = 0) sits slightly higher, outer cards curve down
+            const y = Math.pow(offset, 2) * (arcDepth * 0.42);
+            const rotateZ = offset * 3.2;
+            const scale = Math.max(0.86, 1.04 - absOffset * 0.055);
+            const zIndex = Math.round(20 - absOffset * 4);
+            const opacity = absOffset > 2.6 ? Math.max(0, 1 - (absOffset - 2.6) * 1.6) : 1;
 
-            {/* EVENT DETAILS BOX */}
-            <div
-              className="relative z-10 w-full max-w-[850px]
-  rounded-[22px] sm:rounded-[28px]
-  border border-[#D6B879]/70
-  bg-[#FFF8EB]/80
-  backdrop-blur-[2px]
-  shadow-[0_8px_25px_rgba(60,40,20,0.12)]"
-            >
-
-              <div className="flex items-start gap-4 sm:gap-6
-                p-4 sm:p-7 md:p-9">
-
-                {/* EVENT NUMBER */}
-                <div
-                  className="flex shrink-0 items-center justify-center
-                    w-[64px] h-[64px] sm:w-[100px] sm:h-[100px]
-                    rounded-[12px] sm:rounded-[16px]
-                    font-serif text-sm sm:text-xl"
+            return (
+              <div
+                key={card.id ?? index}
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  width: `${cardWidth}px`,
+                  height: `${cardHeight}px`,
+                  marginLeft: `-${cardWidth / 2}px`,
+                  marginTop: `-${cardHeight / 2}px`,
+                  transform: `translate3d(${x}px, ${y}px, 0) rotate(${rotateZ}deg) scale(${scale})`,
+                  transformOrigin: "center center",
+                  zIndex,
+                  opacity,
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  boxShadow:
+                    absOffset < 0.6
+                      ? "0 18px 34px rgba(15, 23, 42, 0.22)"
+                      : "0 10px 22px rgba(15, 23, 42, 0.14)",
+                  border: "1px solid rgba(255, 255, 255, 0.65)",
+                  background: "#e5e7eb",
+                  willChange: "transform",
+                }}
+              >
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  draggable={false}
                   style={{
-                    backgroundColor: "#B69B70" === item.accent ? "#B69B70" : "#D6B879",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    display: "block",
                   }}
-                >
-                  {item.number}
-                </div>
-
-                {/* EVENT DETAILS */}
-                <div className="flex-1 min-w-0">
-
-                  <h3 className="font-serif text-2xl sm:text-3xl
-                    md:text-4xl text-[#4A3023] mb-3">
-                    {item.title}
-                  </h3>
-
-                  <div className="space-y-1.5 sm:space-y-2
-                    text-xs sm:text-sm md:text-base
-                    text-[#4A3023]">
-
-                    <div className="flex gap-3">
-                      <span className="w-12 sm:w-14 text-[#4A3023]">
-                        Date
-                      </span>
-                      <span>{item.date}</span>
-                    </div>
-
-                    <div className="flex gap-3">
-                      <span className="w-12 sm:w-14 text-[#4A3023]">
-                        Time
-                      </span>
-                      <span>{item.time}</span>
-                    </div>
-
-                    <div className="flex gap-3">
-                      <span className="w-12 sm:w-14 text-[#4A3023]">
-                        Venue
-                      </span>
-                      <span>{item.venue}</span>
-                    </div>
-
-                    <div className="flex gap-3">
-                      <span className="w-12 sm:w-14 text-[#4A3023]">
-                        Wear
-                      </span>
-                      <span>{item.wear}</span>
-                    </div>
-
-                  </div>
-
-                  {/* DIRECTIONS */}
-                  <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.mapsQuery)}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center
-                      mt-4 sm:mt-6 px-5 sm:px-7 py-2.5
-                      rounded-full border border-[#B19A63]
-                      text-[10px] sm:text-xs tracking-[0.15em]
-                      text-[#7B6542]
-                      hover:bg-[#B19A63] hover:text-white
-                      transition-all duration-300"
-                  >
-                    DIRECTIONS
-                  </a>
-
-                </div>
+                />
               </div>
-            </div>
+            );
+          })}
+        </div>
 
-          </div>
-        ))}
-
+        {/* Bottom curved mask matching video's curved arc edge */}
+        <div
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            bottom: "-135px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "145%",
+            height: "175px",
+            borderRadius: "50%",
+            background: "#ffffff",
+            zIndex: 30,
+            pointerEvents: "none",
+          }}
+        />
       </div>
-
-    </section>
+    </div>
   );
-};
-
-export default StackCards;
+}
