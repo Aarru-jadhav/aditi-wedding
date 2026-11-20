@@ -1,190 +1,225 @@
 
-import React, { useRef, useState } from "react";
-
-import palacePoster from "../assets/Images/palace.png";
-import palaceVideo from "../assets/Video/wedding-hero.mp4";
+import React, { useEffect, useState } from "react";
 import WeddingLogo from "../assets/Images/Wedding logo.webp";
 
 export default function Page1() {
-  const videoRef = useRef(null);
-
   const [started, setStarted] = useState(false);
-  const [videoError, setVideoError] = useState(false);
+  const [showLogo, setShowLogo] = useState(false);
   const [showNames, setShowNames] = useState(false);
-  const [videoFinished, setVideoFinished] = useState(false);
+  const [showTagline, setShowTagline] = useState(false);
+  const [finished, setFinished] = useState(false);
 
-  // Change names here
   const brideName = "Aditi";
   const groomName = "Somya";
 
-  const handleEnter = async () => {
-    const video = videoRef.current;
-
-    if (!video || started) return;
+  const handleEnter = () => {
+    if (started) return;
 
     setStarted(true);
-    setVideoError(false);
 
-    video.currentTime = 0;
-
-    try {
-      await video.play();
-    } catch (error) {
-      console.error("Video playback failed:", error);
-      setVideoError(true);
-      setStarted(false);
-    }
+    setTimeout(() => setShowLogo(true), 900);
+    setTimeout(() => setShowNames(true), 2300);
+    setTimeout(() => setShowTagline(true), 3700);
+    setTimeout(() => setFinished(true), 5500);
   };
 
-  // Reveal names near the end of the 6-second video
-  const handleTimeUpdate = () => {
-    const video = videoRef.current;
-
-    if (!video) return;
-
-    if (video.currentTime >= 4.8) {
-      setShowNames(true);
-    }
-  };
-
-  const handleVideoEnd = () => {
-    setShowNames(true);
-    setVideoFinished(true);
-  };
+  const particles = Array.from({ length: 35 }, (_, i) => ({
+    id: i,
+    left: `${(i * 37 + 13) % 100}%`,
+    top: `${(i * 53 + 7) % 100}%`,
+    delay: `${(i % 9) * 0.7}s`,
+    duration: `${5 + (i % 6)}s`,
+    size: `${2 + (i % 3)}px`,
+  }));
 
   return (
-    <section className="relative flex h-[100svh] w-full items-center justify-center overflow-hidden bg-black">
+    <section className="relative flex h-[100svh] w-full items-center justify-center overflow-hidden bg-[#100609]">
 
-      {/* 9:16 RESPONSIVE FRAME */}
+      {/* RESPONSIVE 9:16 FRAME */}
       <div
-        className="relative h-[100svh] max-h-[100svh] overflow-hidden bg-[#EBD9BD]"
+        className="relative h-[100svh] max-h-[100svh] w-full overflow-hidden"
         style={{
           width: "min(100vw, 56.25vh)",
           aspectRatio: "9 / 16",
+          background:
+            "radial-gradient(ellipse at 50% 45%, #421922 0%, #230D13 48%, #100609 100%)",
         }}
       >
 
-        {/* POSTER IMAGE */}
-        <img
-          src={palacePoster}
-          alt="Royal Rajasthani Palace"
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
-            started ? "opacity-0" : "opacity-100"
+        {/* BACKGROUND GLOW */}
+        <div
+          className={`pointer-events-none absolute left-1/2 top-[43%] h-[75%] w-[120%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[80px] transition-all duration-[3000ms] ${
+            started ? "scale-100 opacity-100" : "scale-50 opacity-0"
           }`}
+          style={{
+            background:
+              "radial-gradient(ellipse, rgba(197,145,76,0.22), rgba(120,58,42,0.08) 45%, transparent 70%)",
+          }}
         />
 
-        {/* PALACE VIDEO */}
-        <video
-          ref={videoRef}
-          src={palaceVideo}
-          poster={palacePoster}
-          playsInline
-          preload="auto"
-          muted={true}
-          onTimeUpdate={handleTimeUpdate}
-          onEnded={handleVideoEnd}
-          onError={() => {
-            setVideoError(true);
-            setStarted(false);
-          }}
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
+        {/* GOLDEN SPOTLIGHT */}
+        <div
+          className={`pointer-events-none absolute left-1/2 top-0 h-[80%] w-[100%] -translate-x-1/2 transition-all duration-[2500ms] ${
             started ? "opacity-100" : "opacity-0"
           }`}
+          style={{
+            background:
+              "linear-gradient(180deg, transparent 0%, rgba(213,168,101,0.10) 25%, rgba(213,168,101,0.04) 65%, transparent 100%)",
+            clipPath: "polygon(35% 0, 65% 0, 100% 100%, 0 100%)",
+            filter: "blur(25px)",
+          }}
         />
 
-        {/* SUBTLE DARK OVERLAY */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/25" />
+        {/* FLOATING GOLD PARTICLES */}
+        {started &&
+          particles.map((particle) => (
+            <span
+              key={particle.id}
+              className="pointer-events-none absolute rounded-full bg-[#E8C68D] animate-gold-float"
+              style={{
+                left: particle.left,
+                top: particle.top,
+                width: particle.size,
+                height: particle.size,
+                animationDelay: particle.delay,
+                animationDuration: particle.duration,
+                boxShadow: "0 0 10px rgba(232,198,141,0.8)",
+              }}
+            />
+          ))}
 
-        {/* TAP TO ENTER */}
-        {!started && (
-          <div className="absolute inset-0 z-20 flex items-end justify-center pb-[13%]">
-
-            <button
-              onClick={handleEnter}
-              className="group relative flex items-center justify-center border border-[#D9B76B] bg-[#681F29]/90 px-9 py-4 text-[#F8E8C5] shadow-[0_5px_25px_rgba(0,0,0,0.25)] transition-all duration-500 hover:scale-105 hover:bg-[#7B2934]"
-            >
-              <span className="absolute -inset-1 border border-[#D9B76B]/50" />
-
-              <span className="relative font-serif text-xs tracking-[0.35em]">
-                TAP TO ENTER
-              </span>
-            </button>
-
-          </div>
-        )}
-
-        {/* VIDEO ERROR MESSAGE */}
-        {videoError && (
-          <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/70 p-6 text-center">
-            <div>
-              <p className="font-serif text-lg text-white">
-                Unable to play the video
-              </p>
-
-              <button
-                onClick={() => {
-                  setVideoError(false);
-                  setStarted(false);
-                }}
-                className="mt-4 border border-[#D9B76B] px-6 py-2 text-xs tracking-widest text-[#F8E8C5]"
-              >
-                TRY AGAIN
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* COUPLE LOGO + NAMES REVEAL */}
-
-{/* CENTERED LOGO + NAMES REVEAL */}
-<div
-  className={`pointer-events-none absolute left-0 right-0 top-[1%] z-40 flex flex-col items-center justify-start text-center transition-all duration-[1500ms] ease-out ${
-    showNames
-      ? "translate-y-0 scale-100 opacity-100"
-      : "-translate-y-8 scale-95 opacity-0"
-  }`}
->
-  {/* WEDDING LOGO */}
-  <img
-    src={WeddingLogo}
-    alt="Wedding Logo"
-    className="mb-2 h-auto w-32 object-contain drop-shadow-[0_3px_8px_rgba(0,0,0,0.4)] sm:w-28"
-  />
-
-  {/* FAMILY MESSAGE */}
-  <p className="mb-2 font-['Dancing_Script'] text-[8px] tracking-[0.35em] text-[#F8E8C5] drop-shadow-md sm:text-[10px]">
-    TOGETHER WITH THEIR FAMILIES
-  </p>
-
-  {/* COUPLE NAMES */}
-  <h1 className="font-['Dancing_Script'] text-3xl font-normal text-[#FFF0D2] drop-shadow-[0_3px_8px_rgba(0,0,0,0.65)] sm:text-4xl">
-    {brideName}
-    <span className="mx-2 text-[#E5C078]">&</span>
-    {groomName}
-  </h1>
-
-  {/* DIVIDER */}
-  
-</div>
-
-
-        {/* ENDING DARK GRADIENT */}
+        {/* OPENING TEXT */}
         <div
-          className={`pointer-events-none absolute inset-x-0 top-0 z-10 h-[35%] bg-gradient-to-b from-black/30 to-transparent transition-opacity duration-1000 ${
-            showNames ? "opacity-100" : "opacity-0"
+          className={`absolute left-0 right-0 top-[22%] z-20 text-center transition-all duration-[1800ms] ${
+            started
+              ? "-translate-y-8 opacity-0"
+              : "translate-y-0 opacity-100"
           }`}
-        />
+        >
+          <p className="font-serif text-[10px] tracking-[0.5em] text-[#D6B77D]">
+            A CELEBRATION OF LOVE
+          </p>
+        </div>
 
-        {/* VIDEO FINISHED INDICATOR */}
-        {videoFinished && (
-          <div className="absolute bottom-6 left-0 right-0 z-20 text-center">
-            <span className="font-serif text-[9px] tracking-[0.35em] text-[#F8E8C5]">
-              A ROYAL CELEBRATION AWAITS
-            </span>
-          </div>
+        {/* CENTER LOGO */}
+        <div
+          className={`absolute left-0 right-0 top-[31%] z-30 flex justify-center transition-all duration-[1800ms] ease-out ${
+            showLogo
+              ? "translate-y-0 scale-100 opacity-100"
+              : "translate-y-8 scale-75 opacity-0"
+          }`}
+        >
+          <img
+            src={WeddingLogo}
+            alt="Wedding Logo"
+            className="h-auto w-36 object-contain drop-shadow-[0_0_25px_rgba(226,185,117,0.45)] sm:w-44"
+          />
+        </div>
+
+        {/* COUPLE NAMES */}
+        <div className="absolute left-0 right-0 top-[51%] z-30 flex flex-col items-center text-center">
+
+          {/* BRIDE */}
+          <h1
+            className={`font-['Dancing_Script'] text-6xl font-medium text-[#FFF0D2] drop-shadow-[0_3px_15px_rgba(0,0,0,0.8)] transition-all duration-[1800ms] ease-out sm:text-7xl ${
+              showNames
+                ? "translate-x-0 opacity-100"
+                : "-translate-x-20 opacity-0"
+            }`}
+          >
+            {brideName}
+          </h1>
+
+          {/* AMPERSAND */}
+          <span
+            className={`my-2 font-serif text-3xl italic text-[#DAB77A] transition-all duration-[1600ms] delay-300 ${
+              showNames ? "scale-100 opacity-100" : "scale-50 opacity-0"
+            }`}
+          >
+            &
+          </span>
+
+          {/* GROOM */}
+          <h1
+            className={`font-['Dancing_Script'] text-6xl font-medium text-[#FFF0D2] drop-shadow-[0_3px_15px_rgba(0,0,0,0.8)] transition-all duration-[1800ms] ease-out sm:text-7xl ${
+              showNames
+                ? "translate-x-0 opacity-100"
+                : "translate-x-20 opacity-0"
+            }`}
+          >
+            {groomName}
+          </h1>
+        </div>
+
+        {/* GOLD DIVIDER */}
+        <div
+          className={`absolute left-1/2 top-[76%] z-30 flex w-44 -translate-x-1/2 items-center gap-3 transition-all duration-[1500ms] ${
+            showTagline ? "scale-100 opacity-100" : "scale-50 opacity-0"
+          }`}
+        >
+          <span className="h-px flex-1 bg-gradient-to-r from-transparent to-[#D9B779]" />
+          <span className="h-2 w-2 rotate-45 border border-[#D9B779]" />
+          <span className="h-px flex-1 bg-gradient-to-l from-transparent to-[#D9B779]" />
+        </div>
+
+        {/* TAGLINE */}
+        <div
+          className={`absolute left-0 right-0 top-[79%] z-30 text-center transition-all duration-[1800ms] ${
+            showTagline
+              ? "translate-y-0 opacity-100"
+              : "translate-y-5 opacity-0"
+          }`}
+        >
+          <p className="font-serif text-[9px] tracking-[0.35em] text-[#E8D1A9]">
+            TWO SOULS, ONE BEAUTIFUL JOURNEY
+          </p>
+        </div>
+
+        {/* TAP TO BEGIN */}
+        {!started && (
+          <button
+            onClick={handleEnter}
+            className="absolute bottom-[13%] left-1/2 z-40 -translate-x-1/2 whitespace-nowrap border border-[#C9A568] bg-[#541C27]/80 px-10 py-4 font-serif text-[10px] tracking-[0.4em] text-[#F8E8C5] shadow-[0_5px_25px_rgba(0,0,0,0.3)] transition-all duration-500 hover:scale-105 hover:bg-[#702D36]"
+          >
+            TAP TO BEGIN
+          </button>
         )}
 
+        {/* FINAL SMALL TEXT */}
+        {finished && (
+          <div className="absolute bottom-[5%] left-0 right-0 z-30 text-center">
+            <p className="font-serif text-[8px] tracking-[0.4em] text-[#C9A568]">
+              A ROYAL CELEBRATION AWAITS
+            </p>
+          </div>
+        )}
       </div>
+
+      {/* PARTICLE ANIMATION CSS */}
+      <style>{`
+        @keyframes goldFloat {
+          0% {
+            transform: translateY(25px) scale(0.5);
+            opacity: 0;
+          }
+          25% {
+            opacity: 0.8;
+          }
+          75% {
+            opacity: 0.5;
+          }
+          100% {
+            transform: translateY(-100px) scale(1.2);
+            opacity: 0;
+          }
+        }
+
+        .animate-gold-float {
+          animation-name: goldFloat;
+          animation-timing-function: ease-in-out;
+          animation-iteration-count: infinite;
+        }
+      `}</style>
     </section>
   );
 }
