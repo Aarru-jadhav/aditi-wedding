@@ -683,22 +683,21 @@
 //   );
 // }
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Mic, MicOff, RotateCcw, Sparkles } from 'lucide-react';
-import WeddingLogo from '../assets/Images/Wedding logo.webp'; // Agar asset folder me image rakhi ho to import karen
-// Agar asset folder se import karna ho to:
-// import logoImg from '../assets/logo.png';
+import { Mic, MicOff, RotateCcw, Sparkles, Volume2, VolumeX, Square } from 'lucide-react';
+import WeddingLogo from '../assets/Images/Wedding logo.webp';
+import Weddingaudio from '../assets/audio/Weddingaudio.mp3';
 
 /**
- * Page1 - Interactive Royal Blue Glitter Reveal Wedding Invitation
- * With Logo Photo + Simple Name Reveal
+- Page1 - Interactive Royal Blue Glitter Reveal Wedding Invitation
+- With Logo Photo + Simple Name Reveal + Background Audio
  */
 export default function Page1() {
-  // Apni logo photo ka path aur simple naam yahan set karein
   const [inviteDetails] = useState({
-    logoSrc: WeddingLogo, // Apni image ka path ya imported image variable yahan dalein
+    logoSrc: WeddingLogo,
     logoAlt: 'Wedding Crest Logo',
-bride: 'Aditi',
-    groom: 'Somya', // Yahan simple naam likhein
+    bride: 'Aditi',
+    groom: 'Somya',
+    audioSrc: Weddingaudio,
   });
 
   // Reveal & interaction states
@@ -707,6 +706,7 @@ bride: 'Aditi',
   const [micActive, setMicActive] = useState(false);
   const [micError, setMicError] = useState('');
   const [logoLoadError, setLogoLoadError] = useState(false);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   // Refs for canvas, particles, animation loop, and audio
   const containerRef = useRef(null);
@@ -719,6 +719,7 @@ bride: 'Aditi',
   const audioContextRef = useRef(null);
   const micStreamRef = useRef(null);
   const micAnimRef = useRef(null);
+  const audioRef = useRef(null);
 
   // Inject luxury serif & script Google Fonts dynamically so Page1.jsx is 100% self-contained
   useEffect(() => {
@@ -732,6 +733,40 @@ bride: 'Aditi',
       document.head.appendChild(link);
     }
   }, []);
+
+  // Audio playback helpers
+  const startAudioOnInteraction = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio || !audio.paused) return;
+    audio.volume = 0.45;
+    audio
+      .play()
+      .then(() => setIsMusicPlaying(true))
+      .catch(() => {});
+  }, []);
+
+  const toggleMusic = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (audio.paused) {
+      audio.volume = 0.45;
+      audio
+        .play()
+        .then(() => setIsMusicPlaying(true))
+        .catch(() => {});
+    } else {
+      audio.pause();
+      setIsMusicPlaying(false);
+    }
+  };
+
+  const stopMusic = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.pause();
+    audio.currentTime = 0;
+    setIsMusicPlaying(false);
+  };
 
   // Color palette for rich royal blue, sapphire, cobalt, champagne-gold, and white sparkles
   const GLITTER_COLORS = [
@@ -822,6 +857,7 @@ bride: 'Aditi',
   // Blow effect: disperses a dramatic swath of glitter across the screen
   const triggerBlowGust = useCallback(
     (intensity = 1) => {
+      startAudioOnInteraction();
       const canvas = canvasRef.current;
       if (!canvas) return;
       const rect = canvas.getBoundingClientRect();
@@ -830,7 +866,7 @@ bride: 'Aditi',
 
       disperseAt(centerX, centerY, Math.max(rect.width, rect.height) * 0.55, 16 * intensity);
     },
-    [disperseAt]
+    [disperseAt, startAudioOnInteraction]
   );
 
   // Calculate percentage of dispersed particles to trigger curtain parting
@@ -975,6 +1011,7 @@ bride: 'Aditi',
   };
 
   const handlePointerDown = (e) => {
+    startAudioOnInteraction();
     if (isRevealedRef.current) return;
     isPointerDownRef.current = true;
     const coords = getRelativeCoords(e);
@@ -1004,6 +1041,7 @@ bride: 'Aditi',
 
   // Microphone Blow Detection using Web Audio API
   const toggleMicrophoneBlow = async () => {
+    startAudioOnInteraction();
     setMicError('');
     if (micActive) {
       stopMicrophone();
@@ -1086,6 +1124,27 @@ bride: 'Aditi',
 
   return (
     <div className="min-h-screen w-full bg-[#04091a] flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-hidden relative">
+      {/* Equalizer bar animation for active song state */}
+      <style>{`
+        @keyframes eqBounce {
+          0%, 100% { transform: scaleY(0.35); }
+          50% { transform: scaleY(1); }
+        }
+        .eq-bar-1 { animation: eqBounce 0.7s ease-in-out infinite; }
+        .eq-bar-2 { animation: eqBounce 0.55s ease-in-out 0.15s infinite; }
+        .eq-bar-3 { animation: eqBounce 0.8s ease-in-out 0.3s infinite; }
+      `}</style>
+
+      {/* Background Wedding Audio */}
+      <audio
+        ref={audioRef}
+        src={inviteDetails.audioSrc}
+        loop
+        preload="auto"
+        onPlay={() => setIsMusicPlaying(true)}
+        onPause={() => setIsMusicPlaying(false)}
+      />
+
       {/* Ambient royal blue theater glow behind the card */}
       <div
         className="pointer-events-none absolute inset-0 opacity-80"
@@ -1146,28 +1205,28 @@ bride: 'Aditi',
 
             <div className="w-20 h-[1px] bg-gradient-to-r from-transparent via-[#f3d078] to-transparent" />
 
-           <div className="flex flex-col items-center leading-tight">
-  <h1
-    className="text-4xl sm:text-5xl text-[#fff6e0] drop-shadow-[0_2px_12px_rgba(255,209,102,0.45)]"
-    style={{ fontFamily: "'Great Vibes', cursive" }}
-  >
-    {inviteDetails.bride}
-  </h1>
+            <div className="flex flex-col items-center leading-tight">
+              <h1
+                className="text-4xl sm:text-5xl text-[#fff6e0] drop-shadow-[0_2px_12px_rgba(255,209,102,0.45)]"
+                style={{ fontFamily: "'Great Vibes', cursive" }}
+              >
+                {inviteDetails.bride}
+              </h1>
 
-  <span
-    className="text-2xl sm:text-3xl text-[#f3d078] my-1"
-    style={{ fontFamily: "'Great Vibes', cursive" }}
-  >
-    &
-  </span>
+              <span
+                className="text-2xl sm:text-3xl text-[#f3d078] my-1"
+                style={{ fontFamily: "'Great Vibes', cursive" }}
+              >
+                &
+              </span>
 
-  <h1
-    className="text-4xl sm:text-5xl text-[#fff6e0] drop-shadow-[0_2px_12px_rgba(255,209,102,0.45)]"
-    style={{ fontFamily: "'Great Vibes', cursive" }}
-  >
-    {inviteDetails.groom}
-  </h1>
-</div>
+              <h1
+                className="text-4xl sm:text-5xl text-[#fff6e0] drop-shadow-[0_2px_12px_rgba(255,209,102,0.45)]"
+                style={{ fontFamily: "'Great Vibes', cursive" }}
+              >
+                {inviteDetails.groom}
+              </h1>
+            </div>
           </div>
         </div>
 
@@ -1249,7 +1308,7 @@ bride: 'Aditi',
       </div>
 
       {/* Bottom Interactive Controls */}
-      <div className="relative z-50 mt-4 flex flex-wrap items-center justify-center gap-2.5 max-w-[420px]">
+      <div className="relative z-50 mt-4 flex flex-wrap items-center justify-center gap-2.5 max-w-[460px]">
         {!isFullyRevealed && (
           <>
             <button
@@ -1275,6 +1334,45 @@ bride: 'Aditi',
             </button>
           </>
         )}
+
+        {/* Play / Pause Button with Active Playing Icon & Equalizer */}
+        <button
+          type="button"
+          onClick={toggleMusic}
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase border active:scale-95 transition-all cursor-pointer ${
+            isMusicPlaying
+              ? 'bg-[#f3d078]/25 text-[#fff6e0] border-[#ffd166] shadow-[0_0_14px_rgba(243,208,120,0.35)]'
+              : 'bg-[#f3d078]/15 text-[#f8e6be] border-[#f3d078]/35 hover:bg-[#f3d078]/25'
+          }`}
+        >
+          {isMusicPlaying ? (
+            <>
+              <Volume2 className="w-3.5 h-3.5 text-[#ffd166]" />
+              <span className="flex items-end gap-[2px] h-3 w-3 justify-center">
+                <span className="w-[2px] h-full bg-[#ffd166] rounded-full eq-bar-1 origin-bottom" />
+                <span className="w-[2px] h-full bg-[#ffd166] rounded-full eq-bar-2 origin-bottom" />
+                <span className="w-[2px] h-full bg-[#ffd166] rounded-full eq-bar-3 origin-bottom" />
+              </span>
+              <span>Playing</span>
+            </>
+          ) : (
+            <>
+              <VolumeX className="w-3.5 h-3.5" />
+              <span>Play Music</span>
+            </>
+          )}
+        </button>
+
+        {/* Stop Button */}
+        <button
+          type="button"
+          onClick={stopMusic}
+          title="Stop Music"
+          className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium tracking-wider uppercase bg-white/10 text-[#f8e6be] border border-white/20 hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
+        >
+          <Square className="w-3 h-3 fill-current text-[#f3d078]" />
+          <span>Stop</span>
+        </button>
 
         <button
           type="button"
