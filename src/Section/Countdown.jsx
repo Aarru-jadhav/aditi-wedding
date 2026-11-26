@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Sparkles, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 
-const TARGET_DATE_ISO = "2026-12-16T18:00:00+05:30";
+const TARGET_DATE_ISO = "2026-12-14T18:00:00+05:30";
 
 function getTimeRemaining(targetIso) {
   const targetMs = new Date(targetIso).getTime();
@@ -100,7 +100,7 @@ function InteractiveFlower({ isOpen, onToggle, dateText }) {
           </g>
         </svg>
 
-        {/* Center Medallion: Shows "Click Flower" Before Click, "16 December 2026" Inside After Click */}
+        {/* Center Medallion: Shows "Tap Flower" Before Click, "14 December 2026" Inside After Click */}
         <div
           className="relative z-10 rounded-full border-2 border-[#f3d078] bg-[#06112d]/95 flex flex-col items-center justify-center text-center px-4 shadow-[0_10px_30px_rgba(0,0,0,0.85),0_0_20px_rgba(243,208,120,0.45)] transition-all duration-500"
           style={{
@@ -140,7 +140,7 @@ function InteractiveFlower({ isOpen, onToggle, dateText }) {
 export default function Countdown({
   targetDate = TARGET_DATE_ISO,
   heading = "Reveal The Date",
-  dateText = "16 December 2026",
+  dateText = "14 December 2026",
 }) {
   const [isFlowerOpen, setIsFlowerOpen] = useState(false);
   const [timeLeft, setTimeLeft] = useState(() => getTimeRemaining(targetDate));
@@ -197,9 +197,6 @@ export default function Countdown({
       <div className="relative z-10 w-full max-w-[440px] rounded-[34px] border border-[#f3d078]/45 bg-[#071330]/90 backdrop-blur-md px-6 py-10 shadow-[0_25px_70px_rgba(0,0,0,0.9),0_0_45px_rgba(37,99,235,0.28)] flex flex-col items-center text-center">
         <div className="pointer-events-none absolute inset-3 rounded-[24px] border border-[#f3d078]/30" />
 
-        <Sparkles className="w-4 h-4 text-[#f3d078]/75 absolute top-7 left-7 animate-pulse" />
-        <Sparkles className="w-4 h-4 text-[#f3d078]/75 absolute top-7 right-7 animate-pulse" />
-
         {/* Top Heading: Reveal The Date */}
         <h2
           className="text-2xl sm:text-3xl font-bold tracking-[0.22em] uppercase text-[#fff6e0] drop-shadow-[0_2px_12px_rgba(243,208,120,0.35)] mt-1"
@@ -210,7 +207,7 @@ export default function Countdown({
 
         <div className="w-20 h-[1px] bg-gradient-to-r from-transparent via-[#f3d078] to-transparent my-3" />
 
-        {/* Proper Interactive Flower -> Reveals "16 December 2026" on Click */}
+        {/* Proper Interactive Flower -> Reveals "14 December 2026" on Click */}
         <InteractiveFlower
           isOpen={isFlowerOpen}
           onToggle={() => setIsFlowerOpen((prev) => !prev)}

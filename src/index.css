@@ -43,3 +43,24 @@
   font-style: normal;
   font-display: swap;
 }
+@font-face {
+  font-family: "Lora";
+  src: url("./assets/Fonts/Lora-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Changa One";
+  src: url("./assets/Fonts/ChangaOne-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Changa One";
+  src: url("./assets/Fonts/ChangaOne-Italic.ttf") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}

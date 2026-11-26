@@ -398,7 +398,7 @@ const DEFAULT_CARDS = [
   {
     id: 1,
     title: "Ganesh Pujan",
-    dateTag: "Day 01 • Morning",
+    // dateTag: "Day 01 • Morning",
     description:
       "Morning turmeric blessings filled with laughter, marigold decor, and family warmth.",
     locationName: "Royal Courtyard Lawn",
@@ -408,7 +408,7 @@ const DEFAULT_CARDS = [
   {
     id: 2,
     title: "Chak Bhat",
-    dateTag: "Day 01 • Afternoon",
+    // dateTag: "Day 01 • Afternoon",
     description:
       "Intricate henna designs, folk songs, vibrant colors, and joyful celebrations.",
     locationName: "Garden Pavilion Hall",
@@ -418,7 +418,7 @@ const DEFAULT_CARDS = [
   {
     id: 3,
     title: "Mehndi",
-    dateTag: "Day 01 • Evening",
+    // dateTag: "Day 01 • Evening",
     description:
       "An evening of choreographed dances, music, lights, and unforgettable performances.",
     locationName: "Grand Banquet Ballroom",
@@ -428,7 +428,7 @@ const DEFAULT_CARDS = [
   {
     id: 4,
     title: "Ganga Pooja",
-    dateTag: "Day 02 • Afternoon",
+    // dateTag: "Day 02 • Afternoon",
     description:
       "A lively procession with dhol beats, dancing guests, and festive celebration.",
     locationName: "Heritage Main Gate",
@@ -449,7 +449,7 @@ const DEFAULT_CARDS = [
   {
     id: 6,
     title: "Shadi (Pheras)",
-    dateTag: "Day 02 • Auspicious Hour",
+    // dateTag: "Day 02 • Auspicious Hour",
     description:
       "Sacred vows around the holy fire surrounded by family blessings and tradition.",
     locationName: "Mandap Sacred Lawn",
@@ -459,7 +459,7 @@ const DEFAULT_CARDS = [
   {
     id: 7,
     title: "Reception",
-    dateTag: "Day 02 • Grand Finale",
+    // dateTag: "Day 02 • Grand Finale",
     description:
       "A grand evening to celebrate the newlyweds with dinner, toasts, and music.",
     locationName: "Crystal Palace Lawns",
