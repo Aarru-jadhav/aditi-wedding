@@ -4,10 +4,10 @@ import WeddingLogo from '../assets/Images/Wedding logo.webp';
 import Weddingaudio from '../assets/audio/Weddingaudio.mp3';
 
 /**
- * Page1 - Interactive Royal Blue Glitter Scratch Reveal Wedding Invitation
- * - Locks scroll / next sections until matter is fully revealed
- * - Keeps revealed matter clear with non-blocking sparkles (never re-covers with glitter veil)
- * - Auto-plays music and only pauses when user clicks the circular music icon
+- Page1 - Interactive Royal Blue Glitter Scratch Reveal Wedding Invitation
+- - Locks scroll / next sections until matter is fully revealed
+- - Keeps revealed matter clear with non-blocking sparkles (never re-covers with glitter veil)
+- - Auto-plays music and turns off when user clicks the side circle icon
  */
 export default function Page1({ onRevealComplete }) {
   const [inviteDetails] = useState({
@@ -65,7 +65,7 @@ export default function Page1({ onRevealComplete }) {
     };
   }, [isFullyRevealed, onRevealComplete]);
 
-  // Keep music auto-ON unless user explicitly turns it OFF via the circle icon
+  // Auto-play music on load and first interaction unless user turns it off
   const ensureMusicPlaying = useCallback(() => {
     const audio = audioRef.current;
     if (!audio || manuallyPausedRef.current) return;
