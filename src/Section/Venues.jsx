@@ -1,19 +1,21 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { MapPin, Sparkles } from "lucide-react";
+import { MapPin, Sparkles, Clock } from "lucide-react";
 
 const SPARKLE_COLORS = ["#f3d078", "#ffd166", "#fff6e0", "#ffffff"];
 
-export default function Venues() {
+export default function Reception() {
   const [sparkles, setSparkles] = useState([]);
 
-  const venueData = {
-    heading: "The Venue",
-    name: "The Ananta Hotel",
-    city: "Udaipur, Rajasthan",
+  const receptionData = {
+    heading: "The Reception",
+    subHeading: "Dinner & Cocktails",
+    name: "Param Prime Hills",
+    city: "Evening Celebration • 7:30 PM Onwards",
+    // Grand evening reception chandelier & banquet ambiance photo
     photoSrc:
-      "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1800&q=85",
+      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1800&q=85",
     mapUrl:
-      "https://www.google.com/maps/search/?api=1&query=The+Ananta+Hotel+Udaipur",
+      "https://www.google.com/maps/search/?api=1&query=Param+Prime+Hills",
   };
 
   useEffect(() => {
@@ -75,50 +77,57 @@ export default function Venues() {
         }
       `}</style>
 
-      {/* Full-Screen Cover Photo (Mobile & Desktop) */}
+      {/* Full-Screen Reception Cover Photo */}
       <img
-        src={venueData.photoSrc}
-        alt={venueData.name}
+        src={receptionData.photoSrc}
+        alt={receptionData.name}
         className="absolute inset-0 h-full w-full object-cover object-center"
       />
 
-      {/* Royal Blue & Midnight Gradient Overlay for Top & Bottom Text Clarity */}
+      {/* Royal Blue & Midnight Gradient Overlay for Text Clarity */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(4,9,26,0.82) 0%, rgba(4,9,26,0.28) 38%, rgba(4,9,26,0.45) 62%, rgba(4,9,26,0.92) 100%)",
+            "linear-gradient(180deg, rgba(4,9,26,0.85) 0%, rgba(4,9,26,0.32) 38%, rgba(4,9,26,0.48) 62%, rgba(4,9,26,0.94) 100%)",
         }}
       />
 
       {/* Subtle Full-Viewport Gold Frame */}
       <div className="pointer-events-none absolute inset-3 sm:inset-5 rounded-[24px] border border-[#f3d078]/30" />
 
-      {/* Top Heading: The Venue */}
+      {/* Top Heading: The Reception */}
       <div className="relative z-10 flex flex-col items-center text-center mt-1">
+        <span
+          className="text-[11px] sm:text-xs tracking-[0.35em] uppercase text-[#f3d078] mb-1.5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]"
+          style={{ fontFamily: "'Cinzel', serif" }}
+        >
+          {receptionData.subHeading}
+        </span>
         <h1
           className="text-4xl sm:text-5xl font-bold tracking-[0.2em] uppercase text-[#fff6e0] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]"
           style={{ fontFamily: "'Cinzel', serif" }}
         >
-          {venueData.heading}
+          {receptionData.heading}
         </h1>
-        <div className="w-20 h-[1px] bg-gradient-to-r from-transparent via-[#f3d078] to-transparent mt-2.5" />
+        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#f3d078] to-transparent mt-2.5" />
       </div>
 
-      {/* Bottom Overlay: Hotel Name + Get Location Button */}
+      {/* Bottom Overlay: Param Prime Hills + Timing + Get Location Button */}
       <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto">
         <h2
           className="text-5xl sm:text-6xl md:text-7xl text-[#fff6e0] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)] leading-tight"
           style={{ fontFamily: "'Great Vibes', cursive", textTransform: "none" }}
         >
-          {venueData.name}
+          {receptionData.name}
         </h2>
 
         <p
-          className="mt-1.5 text-xs sm:text-sm tracking-[0.28em] uppercase text-[#f3d078] drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]"
+          className="mt-2 inline-flex items-center gap-2 text-xs sm:text-sm tracking-[0.24em] uppercase text-[#f3d078] drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]"
           style={{ fontFamily: "'Cinzel', serif" }}
         >
-          {venueData.city}
+          <Clock className="w-3.5 h-3.5 text-[#f3d078]" />
+          <span>{receptionData.city}</span>
         </p>
 
         {/* Get Location Button with Sparkle Burst on Hover */}
@@ -148,7 +157,7 @@ export default function Venues() {
           </div>
 
           <a
-            href={venueData.mapUrl}
+            href={receptionData.mapUrl}
             target="_blank"
             rel="noopener noreferrer"
             onMouseEnter={() => spawnSparkles(20)}
