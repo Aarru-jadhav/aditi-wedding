@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Sparkles, Volume2, VolumeX } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import WeddingLogo from '../assets/Images/Wedding logo.webp';
-import Weddingaudio from '../assets/audio/Weddingaudio.mp3';
 
 /**
-- Page1 - Interactive Royal Blue Glitter Scratch Reveal Wedding Invitation
-- - Locks scroll / next sections until matter is fully revealed
-- - Keeps revealed matter clear with non-blocking sparkles (never re-covers with glitter veil)
-- - Auto-plays music and turns off when user clicks the side circle icon
+ * Page1 - Interactive Royal Blue Glitter Scratch Reveal Wedding Invitation
+ * - Locks scroll / next sections until matter is fully revealed
+ * - Keeps revealed matter clear with non-blocking sparkles (never re-covers with glitter veil)
  */
 export default function Page1({ onRevealComplete }) {
   const [inviteDetails] = useState({
@@ -16,13 +14,11 @@ export default function Page1({ onRevealComplete }) {
     bride: 'Aditi',
     groom: 'Somya',
     dateText: '14 December 2026',
-    audioSrc: Weddingaudio,
   });
 
   const [revealProgress, setRevealProgress] = useState(0);
   const [isFullyRevealed, setIsFullyRevealed] = useState(false);
   const [logoLoadError, setLogoLoadError] = useState(false);
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -31,8 +27,6 @@ export default function Page1({ onRevealComplete }) {
   const isPointerDownRef = useRef(false);
   const lastPointerRef = useRef({ x: 0, y: 0 });
   const isRevealedRef = useRef(false);
-  const audioRef = useRef(null);
-  const manuallyPausedRef = useRef(false);
 
   // Inject luxury serif & script Google Fonts
   useEffect(() => {
@@ -64,54 +58,6 @@ export default function Page1({ onRevealComplete }) {
       document.body.style.overflow = prevOverflow || '';
     };
   }, [isFullyRevealed, onRevealComplete]);
-
-  // Auto-play music on load and first interaction unless user turns it off
-  const ensureMusicPlaying = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio || manuallyPausedRef.current) return;
-    audio.volume = 0.45;
-    if (audio.paused) {
-      audio
-        .play()
-        .then(() => setIsMusicPlaying(true))
-        .catch(() => setIsMusicPlaying(false));
-    } else {
-      setIsMusicPlaying(true);
-    }
-  }, []);
-
-  useEffect(() => {
-    ensureMusicPlaying();
-
-    const handleFirstUserGesture = () => {
-      ensureMusicPlaying();
-    };
-
-    window.addEventListener('pointerdown', handleFirstUserGesture, { passive: true });
-    window.addEventListener('touchstart', handleFirstUserGesture, { passive: true });
-    window.addEventListener('keydown', handleFirstUserGesture, { passive: true });
-
-    return () => {
-      window.removeEventListener('pointerdown', handleFirstUserGesture);
-      window.removeEventListener('touchstart', handleFirstUserGesture);
-      window.removeEventListener('keydown', handleFirstUserGesture);
-    };
-  }, [ensureMusicPlaying]);
-
-  const toggleCircleMusic = (e) => {
-    e.stopPropagation();
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    if (!audio.paused) {
-      manuallyPausedRef.current = true;
-      audio.pause();
-      setIsMusicPlaying(false);
-    } else {
-      manuallyPausedRef.current = false;
-      ensureMusicPlaying();
-    }
-  };
 
   const GLITTER_COLORS = [
     '#1e40af',
@@ -346,7 +292,6 @@ export default function Page1({ onRevealComplete }) {
   };
 
   const handlePointerDown = (e) => {
-    ensureMusicPlaying();
     if (isRevealedRef.current) return;
     isPointerDownRef.current = true;
     const coords = getRelativeCoords(e);
@@ -395,32 +340,6 @@ export default function Page1({ onRevealComplete }) {
           animation: matterSparkle 2.4s ease-in-out infinite;
         }
       `}</style>
-
-      <audio
-        ref={audioRef}
-        src={inviteDetails.audioSrc}
-        loop
-        autoPlay
-        preload="auto"
-        onPlay={() => {
-          if (!manuallyPausedRef.current) setIsMusicPlaying(true);
-        }}
-        onPause={() => setIsMusicPlaying(false)}
-      />
-
-      {/* Side Fixed Circular Music Toggle Icon */}
-      <button
-        type="button"
-        onClick={toggleCircleMusic}
-        aria-label={isMusicPlaying ? 'Turn music off' : 'Turn music on'}
-        className={`fixed bottom-5 right-4 sm:right-6 z-50 w-10 h-10 rounded-full border flex items-center justify-center backdrop-blur-md shadow-[0_8px_22px_rgba(0,0,0,0.75)] active:scale-95 transition-all cursor-pointer ${
-          isMusicPlaying
-            ? 'bg-[#071330]/90 border-[#f3d078]/75 text-[#ffd166]'
-            : 'bg-[#071330]/80 border-[#f3d078]/35 text-[#f8e6be]/70'
-        }`}
-      >
-        {isMusicPlaying ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
-      </button>
 
       <div
         className="pointer-events-none absolute inset-0 opacity-80"
