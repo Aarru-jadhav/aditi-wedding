@@ -27,7 +27,7 @@ const DEFAULT_CARDS = [
     id: 1,
     title: "Karnival",
     date: "Dec 13, 2026",
-    dateTag: "Day 01 • Morning",
+   
     description:
       "Morning turmeric blessings filled with laughter, marigold decor, and family warmth.",
     locationName: "The Ananta Hotel, Udaipur",
@@ -38,7 +38,7 @@ const DEFAULT_CARDS = [
     id: 2,
     title: "Engagement",
     date: "Dec 13, 2026",
-    dateTag: "Day 01 • Afternoon",
+  
     description:
       "Intricate henna designs, folk songs, vibrant colors, and joyful celebrations.",
     locationName: "The Ananta Hotel, Udaipur",
@@ -49,7 +49,7 @@ const DEFAULT_CARDS = [
     id: 3,
     title: "Mahila Sangeet",
     date: "Dec 13, 2026",
-    dateTag: "Day 01 • Evening",
+   
     description:
       "An evening of choreographed dances, music, lights, and unforgettable performances.",
     locationName: "The Ananta Hotel, Udaipur",
@@ -60,7 +60,7 @@ const DEFAULT_CARDS = [
     id: 4,
     title: "Samela",
     date: "Dec 14, 2026",
-    dateTag: "Day 02 • Afternoon",
+    
     description:
       "A lively procession with dhol beats, dancing guests, and festive celebration.",
     locationName: "The Ananta Hotel, Udaipur",
@@ -72,7 +72,7 @@ const DEFAULT_CARDS = [
     id: 5,
     title: "The Silver Wedding",
     date: "Dec 14, 2026",
-    dateTag: "Day 02 • Auspicious Hour",
+    
     description:
       "Sacred vows around the holy fire surrounded by family blessings and tradition.",
     locationName: "The Ananta Hotel, Udaipur",
@@ -83,7 +83,7 @@ const DEFAULT_CARDS = [
     id: 6,
     title: "Gala Dinner",
     date: "Dec 14, 2026",
-    dateTag: "Day 02 • Evening",
+    
     description:
       "Sacred vows around the holy fire surrounded by family blessings and tradition.",
     locationName: "The Ananta Hotel, Udaipur",
