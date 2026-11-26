@@ -315,7 +315,7 @@
 // export default TheCouple;
 import React, { useState, useEffect } from 'react';
 import { Heart, Sparkles } from 'lucide-react';
-import Couple from '../assets/Images/Couple .jpeg'; // Apni couple photo ka path ya imported image variable yahan dalein
+import Couple from '../assets/Images/Couple .jpeg';
 
 export default function TheCouple() {
   const [showStory, setShowStory] = useState(false);
@@ -323,9 +323,9 @@ export default function TheCouple() {
 
   const coupleData = {
     tag: 'Two Souls, One Journey',
-    photoSrc: '/couple.jpg', // Apni couple photo ka path ya imported image variable yahan dalein
+    photoSrc: Couple,
     bride: 'Aditi',
-    groom: 'Aarav', // Groom ka naam yahan update karein
+    groom: 'Somya',
     quote: '“In all the world, there is no heart for me like yours.”',
     story:
       'From a chance coffee conversation to forever — celebrating love, laughter, and the beginning of our greatest adventure together with our closest family and friends.',
@@ -456,7 +456,7 @@ export default function TheCouple() {
               {coupleData.photoSrc && (
                 <img
                   src={coupleData.photoSrc}
-                  alt=""
+                  alt="Aditi and Somya"
                   onLoad={() => setImgLoaded(true)}
                   onError={() => setImgLoaded(false)}
                   className={`w-full h-full object-cover object-center animate-medallion-zoom transition-opacity duration-700 ${

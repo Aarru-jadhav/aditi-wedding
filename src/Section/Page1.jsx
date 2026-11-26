@@ -683,13 +683,13 @@
 //   );
 // }
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Mic, MicOff, RotateCcw, Sparkles, Volume2, VolumeX, Square } from 'lucide-react';
+import { Sparkles, Volume2, VolumeX } from 'lucide-react';
 import WeddingLogo from '../assets/Images/Wedding logo.webp';
 import Weddingaudio from '../assets/audio/Weddingaudio.mp3';
 
 /**
-- Page1 - Interactive Royal Blue Glitter Reveal Wedding Invitation
-- With Logo Photo + Simple Name Reveal + Background Audio
+ * Page1 - Interactive Royal Blue Glitter Scratch Reveal Wedding Invitation
+ * With Side Circular Music Toggle
  */
 export default function Page1() {
   const [inviteDetails] = useState({
@@ -700,15 +700,11 @@ export default function Page1() {
     audioSrc: Weddingaudio,
   });
 
-  // Reveal & interaction states
-  const [revealProgress, setRevealProgress] = useState(0); // 0 to 1
+  const [revealProgress, setRevealProgress] = useState(0);
   const [isFullyRevealed, setIsFullyRevealed] = useState(false);
-  const [micActive, setMicActive] = useState(false);
-  const [micError, setMicError] = useState('');
   const [logoLoadError, setLogoLoadError] = useState(false);
   const [isMusicPlaying, setIsMusicPlaying] = useState(false);
 
-  // Refs for canvas, particles, animation loop, and audio
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
   const particlesRef = useRef([]);
@@ -716,12 +712,9 @@ export default function Page1() {
   const isPointerDownRef = useRef(false);
   const lastPointerRef = useRef({ x: 0, y: 0 });
   const isRevealedRef = useRef(false);
-  const audioContextRef = useRef(null);
-  const micStreamRef = useRef(null);
-  const micAnimRef = useRef(null);
   const audioRef = useRef(null);
+  const manuallyPausedRef = useRef(false);
 
-  // Inject luxury serif & script Google Fonts dynamically so Page1.jsx is 100% self-contained
   useEffect(() => {
     const fontId = 'wedding-glitter-fonts';
     if (!document.getElementById(fontId)) {
@@ -734,10 +727,9 @@ export default function Page1() {
     }
   }, []);
 
-  // Audio playback helpers
-  const startAudioOnInteraction = useCallback(() => {
+  const playSong = useCallback(() => {
     const audio = audioRef.current;
-    if (!audio || !audio.paused) return;
+    if (!audio || manuallyPausedRef.current) return;
     audio.volume = 0.45;
     audio
       .play()
@@ -745,41 +737,59 @@ export default function Page1() {
       .catch(() => {});
   }, []);
 
-  const toggleMusic = () => {
+  useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    if (audio.paused) {
-      audio.volume = 0.45;
-      audio
-        .play()
-        .then(() => setIsMusicPlaying(true))
-        .catch(() => {});
-    } else {
+
+    audio.volume = 0.45;
+    audio
+      .play()
+      .then(() => setIsMusicPlaying(true))
+      .catch(() => setIsMusicPlaying(false));
+
+    const handleFirstInteraction = () => {
+      if (manuallyPausedRef.current) return;
+      if (audio.paused) {
+        audio
+          .play()
+          .then(() => setIsMusicPlaying(true))
+          .catch(() => {});
+      }
+    };
+
+    window.addEventListener('pointerdown', handleFirstInteraction, { once: true });
+    window.addEventListener('keydown', handleFirstInteraction, { once: true });
+
+    return () => {
+      window.removeEventListener('pointerdown', handleFirstInteraction);
+      window.removeEventListener('keydown', handleFirstInteraction);
+    };
+  }, []);
+
+  const toggleCircleMusic = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    if (!audio.paused) {
+      manuallyPausedRef.current = true;
       audio.pause();
       setIsMusicPlaying(false);
+    } else {
+      manuallyPausedRef.current = false;
+      playSong();
     }
   };
 
-  const stopMusic = () => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    audio.pause();
-    audio.currentTime = 0;
-    setIsMusicPlaying(false);
-  };
-
-  // Color palette for rich royal blue, sapphire, cobalt, champagne-gold, and white sparkles
   const GLITTER_COLORS = [
-    '#1e40af', // Classic Royal Blue
-    '#1d4ed8', // Vibrant Sapphire
-    '#0a2463', // Deep Imperial Blue
-    '#3b82f6', // Royal Azure shimmer
-    '#0f172a', // Midnight Navy velvet
-    '#ffd166', // Warm champagne gold
-    '#ffffff', // Specular white glint
+    '#1e40af',
+    '#1d4ed8',
+    '#0a2463',
+    '#3b82f6',
+    '#0f172a',
+    '#ffd166',
+    '#ffffff',
   ];
 
-  // Initialize dense fine micro-glitter particles filling the card
   const initParticles = useCallback((width, height) => {
     const particles = [];
     const spacing = width < 400 ? 5 : 6;
@@ -822,7 +832,32 @@ export default function Page1() {
     particlesRef.current = particles;
   }, []);
 
-  // Disperse glitter particles around an (x, y) point with outward impulse
+  const updateRevealRatio = () => {
+    const particles = particlesRef.current;
+    if (!particles.length) return;
+    let count = 0;
+    for (let i = 0; i < particles.length; i++) {
+      if (particles[i].dispersed) count++;
+    }
+    const ratio = count / particles.length;
+    setRevealProgress(ratio);
+
+    if (ratio >= 0.48 && !isRevealedRef.current) {
+      isRevealedRef.current = true;
+      setIsFullyRevealed(true);
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        if (!p.dispersed) {
+          p.dispersed = true;
+          const angle = Math.random() * Math.PI * 2;
+          const speed = 3 + Math.random() * 9;
+          p.vx = Math.cos(angle) * speed;
+          p.vy = Math.sin(angle) * speed - 2;
+        }
+      }
+    }
+  };
+
   const disperseAt = useCallback((x, y, radius = 95, force = 14) => {
     const particles = particlesRef.current;
     if (!particles.length) return;
@@ -854,49 +889,6 @@ export default function Page1() {
     }
   }, []);
 
-  // Blow effect: disperses a dramatic swath of glitter across the screen
-  const triggerBlowGust = useCallback(
-    (intensity = 1) => {
-      startAudioOnInteraction();
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      const rect = canvas.getBoundingClientRect();
-      const centerX = rect.width * (0.3 + Math.random() * 0.4);
-      const centerY = rect.height * (0.35 + Math.random() * 0.3);
-
-      disperseAt(centerX, centerY, Math.max(rect.width, rect.height) * 0.55, 16 * intensity);
-    },
-    [disperseAt, startAudioOnInteraction]
-  );
-
-  // Calculate percentage of dispersed particles to trigger curtain parting
-  const updateRevealRatio = () => {
-    const particles = particlesRef.current;
-    if (!particles.length) return;
-    let count = 0;
-    for (let i = 0; i < particles.length; i++) {
-      if (particles[i].dispersed) count++;
-    }
-    const ratio = count / particles.length;
-    setRevealProgress(ratio);
-
-    if (ratio >= 0.48 && !isRevealedRef.current) {
-      isRevealedRef.current = true;
-      setIsFullyRevealed(true);
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        if (!p.dispersed) {
-          p.dispersed = true;
-          const angle = Math.random() * Math.PI * 2;
-          const speed = 3 + Math.random() * 9;
-          p.vx = Math.cos(angle) * speed;
-          p.vy = Math.sin(angle) * speed - 2;
-        }
-      }
-    }
-  };
-
-  // Setup Canvas & Animation Loop
   useEffect(() => {
     const canvas = canvasRef.current;
     const container = containerRef.current;
@@ -999,7 +991,6 @@ export default function Page1() {
     };
   }, [initParticles]);
 
-  // Pointer (Mouse + Touch) handlers for tap and swipe dispersion
   const getRelativeCoords = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
@@ -1011,7 +1002,7 @@ export default function Page1() {
   };
 
   const handlePointerDown = (e) => {
-    startAudioOnInteraction();
+    playSong();
     if (isRevealedRef.current) return;
     isPointerDownRef.current = true;
     const coords = getRelativeCoords(e);
@@ -1039,113 +1030,36 @@ export default function Page1() {
     isPointerDownRef.current = false;
   };
 
-  // Microphone Blow Detection using Web Audio API
-  const toggleMicrophoneBlow = async () => {
-    startAudioOnInteraction();
-    setMicError('');
-    if (micActive) {
-      stopMicrophone();
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      micStreamRef.current = stream;
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      const audioCtx = new AudioCtx();
-      audioContextRef.current = audioCtx;
-
-      const source = audioCtx.createMediaStreamSource(stream);
-      const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 256;
-      source.connect(analyser);
-
-      const dataArray = new Uint8Array(analyser.frequencyBinCount);
-      setMicActive(true);
-
-      const detectBlow = () => {
-        if (!micStreamRef.current) return;
-        analyser.getByteFrequencyData(dataArray);
-
-        let sum = 0;
-        const bins = 24;
-        for (let i = 0; i < bins; i++) {
-          sum += dataArray[i];
-        }
-        const avgVolume = sum / bins;
-
-        if (avgVolume > 62 && !isRevealedRef.current) {
-          const intensity = Math.min(2, (avgVolume - 55) / 35);
-          triggerBlowGust(intensity);
-        }
-
-        micAnimRef.current = requestAnimationFrame(detectBlow);
-      };
-
-      micAnimRef.current = requestAnimationFrame(detectBlow);
-    } catch (err) {
-      setMicError('Mic access denied — tap or swipe the glitter!');
-      setMicActive(false);
-    }
-  };
-
-  const stopMicrophone = () => {
-    if (micAnimRef.current) cancelAnimationFrame(micAnimRef.current);
-    if (micStreamRef.current) {
-      micStreamRef.current.getTracks().forEach((t) => t.stop());
-      micStreamRef.current = null;
-    }
-    if (audioContextRef.current) {
-      audioContextRef.current.close().catch(() => {});
-      audioContextRef.current = null;
-    }
-    setMicActive(false);
-  };
-
-  useEffect(() => {
-    return () => stopMicrophone();
-  }, []);
-
-  // Reset / Replay Glitter Transition
-  const handleReplay = () => {
-    isRevealedRef.current = false;
-    setIsFullyRevealed(false);
-    setRevealProgress(0);
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      initParticles(rect.width, rect.height);
-    }
-  };
-
-  // Curtain opening percentage driven by glitter dispersion
   const curtainOpenPercent = isFullyRevealed
     ? 68
     : Math.min(55, Math.round(revealProgress * 95));
 
   return (
     <div className="min-h-screen w-full bg-[#04091a] flex flex-col items-center justify-center p-3 sm:p-6 select-none overflow-hidden relative">
-      {/* Equalizer bar animation for active song state */}
-      <style>{`
-        @keyframes eqBounce {
-          0%, 100% { transform: scaleY(0.35); }
-          50% { transform: scaleY(1); }
-        }
-        .eq-bar-1 { animation: eqBounce 0.7s ease-in-out infinite; }
-        .eq-bar-2 { animation: eqBounce 0.55s ease-in-out 0.15s infinite; }
-        .eq-bar-3 { animation: eqBounce 0.8s ease-in-out 0.3s infinite; }
-      `}</style>
-
-      {/* Background Wedding Audio */}
       <audio
         ref={audioRef}
         src={inviteDetails.audioSrc}
         loop
+        autoPlay
         preload="auto"
         onPlay={() => setIsMusicPlaying(true)}
         onPause={() => setIsMusicPlaying(false)}
       />
 
-      {/* Ambient royal blue theater glow behind the card */}
+      {/* Side Fixed Circular Music Icon */}
+      <button
+        type="button"
+        onClick={toggleCircleMusic}
+        aria-label={isMusicPlaying ? 'Mute music' : 'Play music'}
+        className={`fixed bottom-5 right-4 sm:right-6 z-50 w-10 h-10 rounded-full border flex items-center justify-center backdrop-blur-md shadow-[0_8px_22px_rgba(0,0,0,0.75)] active:scale-95 transition-all cursor-pointer ${
+          isMusicPlaying
+            ? 'bg-[#071330]/90 border-[#f3d078]/75 text-[#ffd166]'
+            : 'bg-[#071330]/80 border-[#f3d078]/35 text-[#f8e6be]/70'
+        }`}
+      >
+        {isMusicPlaying ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+      </button>
+
       <div
         className="pointer-events-none absolute inset-0 opacity-80"
         style={{
@@ -1154,12 +1068,11 @@ export default function Page1() {
         }}
       />
 
-      {/* Mobile-First Vertical Stage Card */}
       <div
         ref={containerRef}
-        className="relative w-full max-w-[410px] aspect-[9/16] max-h-[82vh] rounded-[32px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.92),0_0_40px_rgba(37,99,235,0.35)] border-[2px] border-[#d4af37]/50 bg-[#071330]"
+        className="relative w-full max-w-[410px] aspect-[9/16] max-h-[85vh] rounded-[32px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.92),0_0_40px_rgba(37,99,235,0.35)] border-[2px] border-[#d4af37]/50 bg-[#071330]"
       >
-        {/* LAYER 1: Simple Logo Photo + Name Stage */}
+        {/* LAYER 1: Logo Photo + Name Stage */}
         <div
           className="absolute inset-0 flex flex-col items-center justify-center px-6 py-10 text-center"
           style={{
@@ -1167,7 +1080,6 @@ export default function Page1() {
               'radial-gradient(ellipse at 50% 35%, #163680 0%, #09183d 65%, #040b1f 100%)',
           }}
         >
-          {/* Warm theatrical spotlight beam from top */}
           <div
             className="pointer-events-none absolute inset-0 opacity-50"
             style={{
@@ -1176,11 +1088,9 @@ export default function Page1() {
             }}
           />
 
-          {/* Decorative Double Gold Inner Frame */}
           <div className="pointer-events-none absolute inset-3 rounded-[22px] border border-[#f3d078]/40" />
           <div className="pointer-events-none absolute inset-4 rounded-[18px] border border-[#f3d078]/20" />
 
-          {/* Center Logo Photo & Name Only */}
           <div
             className={`relative z-10 flex flex-col items-center justify-center gap-6 transition-all duration-1000 ${
               isFullyRevealed || revealProgress > 0.25
@@ -1257,7 +1167,7 @@ export default function Page1() {
           </div>
         </div>
 
-        {/* LAYER 3: Interactive Micro-Glitter Particle Canvas */}
+        {/* LAYER 3: Interactive Scratch / Glitter Particle Canvas */}
         <canvas
           ref={canvasRef}
           onMouseDown={handlePointerDown}
@@ -1272,7 +1182,7 @@ export default function Page1() {
           }`}
         />
 
-        {/* LAYER 4: Floating Prompt Overlay */}
+        {/* LAYER 4: Scratch Prompt Overlay */}
         <div
           className={`pointer-events-none absolute inset-0 z-40 flex flex-col items-center justify-between py-12 px-6 text-center transition-opacity duration-500 ${
             revealProgress > 0.14 || isFullyRevealed ? 'opacity-0' : 'opacity-100'
@@ -1293,100 +1203,19 @@ export default function Page1() {
               className="text-4xl sm:text-5xl text-white drop-shadow-[0_3px_14px_rgba(0,0,0,0.9)]"
               style={{ fontFamily: "'Great Vibes', cursive" }}
             >
-              Blow on the glitter
+              Scratch the glitter
             </h2>
             <p
               className="text-xs sm:text-sm text-[#ffe8b3] tracking-widest uppercase mt-1 drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]"
               style={{ fontFamily: "'Cormorant Garamond', serif" }}
             >
-              or simply tap & swipe
+              tap & swipe to reveal
             </p>
           </div>
 
           <div className="h-4" />
         </div>
       </div>
-
-      {/* Bottom Interactive Controls */}
-      <div className="relative z-50 mt-4 flex flex-wrap items-center justify-center gap-2.5 max-w-[460px]">
-        {!isFullyRevealed && (
-          <>
-            <button
-              type="button"
-              onClick={toggleMicrophoneBlow}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase border transition-all cursor-pointer ${
-                micActive
-                  ? 'bg-[#1d4ed8] text-white border-[#ffd166] shadow-[0_0_16px_rgba(37,99,235,0.8)]'
-                  : 'bg-white/10 text-[#f8e6be] border-white/20 hover:bg-white/20'
-              }`}
-            >
-              {micActive ? <Mic className="w-3.5 h-3.5 animate-bounce" /> : <MicOff className="w-3.5 h-3.5" />}
-              <span>{micActive ? 'Listening... Blow!' : 'Enable Mic Blow'}</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => triggerBlowGust(1.3)}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase bg-[#f3d078]/15 text-[#f3d078] border border-[#f3d078]/40 hover:bg-[#f3d078]/25 active:scale-95 transition-all cursor-pointer"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Blow Gust</span>
-            </button>
-          </>
-        )}
-
-        {/* Play / Pause Button with Active Playing Icon & Equalizer */}
-        <button
-          type="button"
-          onClick={toggleMusic}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase border active:scale-95 transition-all cursor-pointer ${
-            isMusicPlaying
-              ? 'bg-[#f3d078]/25 text-[#fff6e0] border-[#ffd166] shadow-[0_0_14px_rgba(243,208,120,0.35)]'
-              : 'bg-[#f3d078]/15 text-[#f8e6be] border-[#f3d078]/35 hover:bg-[#f3d078]/25'
-          }`}
-        >
-          {isMusicPlaying ? (
-            <>
-              <Volume2 className="w-3.5 h-3.5 text-[#ffd166]" />
-              <span className="flex items-end gap-[2px] h-3 w-3 justify-center">
-                <span className="w-[2px] h-full bg-[#ffd166] rounded-full eq-bar-1 origin-bottom" />
-                <span className="w-[2px] h-full bg-[#ffd166] rounded-full eq-bar-2 origin-bottom" />
-                <span className="w-[2px] h-full bg-[#ffd166] rounded-full eq-bar-3 origin-bottom" />
-              </span>
-              <span>Playing</span>
-            </>
-          ) : (
-            <>
-              <VolumeX className="w-3.5 h-3.5" />
-              <span>Play Music</span>
-            </>
-          )}
-        </button>
-
-        {/* Stop Button */}
-        <button
-          type="button"
-          onClick={stopMusic}
-          title="Stop Music"
-          className="flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium tracking-wider uppercase bg-white/10 text-[#f8e6be] border border-white/20 hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
-        >
-          <Square className="w-3 h-3 fill-current text-[#f3d078]" />
-          <span>Stop</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={handleReplay}
-          className="flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase bg-white/10 text-white/90 border border-white/20 hover:bg-white/20 active:scale-95 transition-all cursor-pointer"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Replay Glitter</span>
-        </button>
-      </div>
-
-      {micError && (
-        <p className="relative z-50 mt-2 text-xs text-[#ffd166] text-center">{micError}</p>
-      )}
     </div>
   );
 }

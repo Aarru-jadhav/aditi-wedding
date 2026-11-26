@@ -4,7 +4,7 @@ import TheCouple from "./Section/TheCouple.jsx";
 import StackCards from "./Section/StackCards.jsx";
 import Venues from "./Section/Venues.jsx";
 import Countdown from "./Section/Countdown.jsx";
-// import Closing from "./Section/Closing.jsx";
+import Closing from "./Section/Closing.jsx";
 
 const App = () => {
   return (
@@ -14,7 +14,7 @@ const App = () => {
       <StackCards />
       <Venues />
       <Countdown />
-      {/* <Closing /> */}
+      <Closing />
     </>
   );
 };

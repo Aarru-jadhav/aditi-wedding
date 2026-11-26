@@ -376,6 +376,12 @@
 // }
 import React, { useEffect, useRef, useState } from "react";
 import { Sparkles, MapPin } from "lucide-react";
+import ganeshpooja from "../assets/Images/ganesh pooja.jpg";
+import chakbhat from "../assets/Images/chak bhat.jpg";
+import mehndi from "../assets/Images/mehndi.jpg";
+import sagai from "../assets/Images/sagai.jpg";
+import silverwedding from "../assets/Images/silver weding.jpg";
+import reception from "../assets/Images/reception.jpg";
 
 const COLORS = {
   bgDeep: "#04091a",
@@ -391,40 +397,37 @@ const COLORS = {
 const DEFAULT_CARDS = [
   {
     id: 1,
-    title: "Haldi Ceremony",
+    title: "Ganesh Pujan",
     dateTag: "Day 01 • Morning",
     description:
       "Morning turmeric blessings filled with laughter, marigold decor, and family warmth.",
     locationName: "Royal Courtyard Lawn",
     mapUrl: "https://maps.google.com/?q=Royal+Courtyard+Lawn",
-    image:
-      "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1000&q=85",
+    image: ganeshpooja,
   },
   {
     id: 2,
-    title: "Mehndi",
+    title: "Chak Bhat",
     dateTag: "Day 01 • Afternoon",
     description:
       "Intricate henna designs, folk songs, vibrant colors, and joyful celebrations.",
     locationName: "Garden Pavilion Hall",
     mapUrl: "https://maps.google.com/?q=Garden+Pavilion+Hall",
-    image:
-      "https://images.unsplash.com/photo-1604608672516-f1b9b1d370e5?auto=format&fit=crop&w=1000&q=85",
+    image: chakbhat,
   },
   {
     id: 3,
-    title: "Sangeet Night",
+    title: "Mehndi",
     dateTag: "Day 01 • Evening",
     description:
       "An evening of choreographed dances, music, lights, and unforgettable performances.",
     locationName: "Grand Banquet Ballroom",
     mapUrl: "https://maps.google.com/?q=Grand+Banquet+Ballroom",
-    image:
-      "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1000&q=85",
+    image: mehndi,
   },
   {
     id: 4,
-    title: "Baraat",
+    title: "Ganga Pooja",
     dateTag: "Day 02 • Afternoon",
     description:
       "A lively procession with dhol beats, dancing guests, and festive celebration.",
@@ -435,25 +438,33 @@ const DEFAULT_CARDS = [
   },
   {
     id: 5,
+    title: "Sagai",
+    dateTag: "Day 02 • Auspicious Hour",
+    description:
+      "Sacred vows around the holy fire surrounded by family blessings and tradition.",
+    locationName: "Mandap Sacred Lawn",
+    mapUrl: "https://maps.google.com/?q=Mandap+Sacred+Lawn",
+    image: sagai,
+  },
+  {
+    id: 6,
     title: "Shadi (Pheras)",
     dateTag: "Day 02 • Auspicious Hour",
     description:
       "Sacred vows around the holy fire surrounded by family blessings and tradition.",
     locationName: "Mandap Sacred Lawn",
     mapUrl: "https://maps.google.com/?q=Mandap+Sacred+Lawn",
-    image:
-      "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=1000&q=85",
+    image: silverwedding,
   },
   {
-    id: 6,
+    id: 7,
     title: "Reception",
     dateTag: "Day 02 • Grand Finale",
     description:
       "A grand evening to celebrate the newlyweds with dinner, toasts, and music.",
     locationName: "Crystal Palace Lawns",
     mapUrl: "https://maps.google.com/?q=Crystal+Palace+Lawns",
-    image:
-      "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1000&q=85",
+    image: reception,
   },
 ];
 
@@ -468,7 +479,7 @@ export default function StackCards({
 }) {
   const count = cards.length;
   const progressRef = useRef((count - 1) / 2);
-  const targetRef = useRef(null); // Smooth jump target when clicking a pill/card
+  const targetRef = useRef(null);
   const directionRef = useRef(1);
   const lastTimeRef = useRef(null);
   const rafRef = useRef(null);
@@ -482,7 +493,6 @@ export default function StackCards({
   const [tick, setTick] = useState(0);
   const [activeIndex, setActiveIndex] = useState(Math.floor((count - 1) / 2));
 
-  // Same Google Fonts as Page1 & TheCouple
   useEffect(() => {
     const fontId = "wedding-glitter-fonts";
     if (!document.getElementById(fontId)) {
@@ -509,7 +519,6 @@ export default function StackCards({
       lastTimeRef.current = timestamp;
 
       if (targetRef.current !== null && !dragStateRef.current.dragging) {
-        // Smooth glide to selected ceremony
         const diff = targetRef.current - progressRef.current;
         if (Math.abs(diff) < 0.008) {
           progressRef.current = targetRef.current;
@@ -610,7 +619,6 @@ export default function StackCards({
         dragStateRef.current.dragging = false;
       }}
     >
-      {/* Ambient Royal Blue Theater Glow */}
       <div
         aria-hidden="true"
         style={{
@@ -622,7 +630,6 @@ export default function StackCards({
         }}
       />
 
-      {/* Top Theatrical Gold Spotlight */}
       <div
         aria-hidden="true"
         style={{
@@ -635,7 +642,6 @@ export default function StackCards({
         }}
       />
 
-      {/* Dynamic Header synced with active card */}
       <header
         style={{
           position: "relative",
@@ -647,7 +653,6 @@ export default function StackCards({
           padding: "0 12px",
         }}
       >
-        {/* Top Royal Eyebrow Badge */}
         <div
           style={{
             display: "inline-flex",
@@ -679,7 +684,6 @@ export default function StackCards({
           )}
         </div>
 
-        {/* Active Ceremony Title in Great Vibes */}
         <h1
           style={{
             margin: "0 0 6px",
@@ -695,7 +699,6 @@ export default function StackCards({
           {activeCard?.title}
         </h1>
 
-        {/* Ornamental Gold Hairline */}
         <div
           style={{
             width: "90px",
@@ -706,7 +709,6 @@ export default function StackCards({
           }}
         />
 
-        {/* Editorial Description */}
         <p
           style={{
             margin: "0 auto",
@@ -722,7 +724,6 @@ export default function StackCards({
         </p>
       </header>
 
-      {/* Full-width Royal Blue Arc Stage */}
       <div
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -738,7 +739,6 @@ export default function StackCards({
           touchAction: "pan-y",
         }}
       >
-        {/* Top curved Midnight Blue mask */}
         <div
           aria-hidden="true"
           style={{
@@ -755,7 +755,6 @@ export default function StackCards({
           }}
         />
 
-        {/* Cards Layer */}
         <div
           data-frame={tick}
           style={{
@@ -819,7 +818,6 @@ export default function StackCards({
                   }}
                 />
 
-                {/* Double Inner Champagne Gold Frame */}
                 <div
                   aria-hidden="true"
                   style={{
@@ -836,7 +834,6 @@ export default function StackCards({
                   }}
                 />
 
-                {/* Royal Midnight Gradient Overlay */}
                 <div
                   style={{
                     position: "absolute",
@@ -847,7 +844,6 @@ export default function StackCards({
                   }}
                 />
 
-                {/* Bottom Event Name & Location Button */}
                 <div
                   style={{
                     position: "absolute",
@@ -922,7 +918,6 @@ export default function StackCards({
           })}
         </div>
 
-        {/* Bottom curved Midnight Blue mask */}
         <div
           aria-hidden="true"
           style={{
@@ -940,7 +935,6 @@ export default function StackCards({
         />
       </div>
 
-      {/* Interactive Ceremony Quick-Jump Pills */}
       <nav
         aria-label="Wedding Events"
         style={{
