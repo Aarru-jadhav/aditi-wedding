@@ -425,21 +425,21 @@ export default function Page1({ onRevealComplete }) {
             <div className="flex flex-col items-center leading-tight">
               <h1
                 className="text-4xl sm:text-5xl text-[#fff6e0] drop-shadow-[0_2px_12px_rgba(255,209,102,0.45)]"
-                style={{ fontFamily: "'Great Vibes', cursive" }}
+                style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 {inviteDetails.bride}
               </h1>
 
               <span
                 className="text-2xl sm:text-3xl text-[#f3d078] my-1"
-                style={{ fontFamily: "'Great Vibes', cursive" }}
+                style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 &
               </span>
 
               <h1
                 className="text-4xl sm:text-5xl text-[#fff6e0] drop-shadow-[0_2px_12px_rgba(255,209,102,0.45)]"
-                style={{ fontFamily: "'Great Vibes', cursive" }}
+                style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 {inviteDetails.groom}
               </h1>

@@ -4,43 +4,51 @@ import reception from "../assets/Images/reception.jpg";
 
 const SPARKLE_COLORS = ["#f3d078", "#ffd166", "#fff6e0", "#ffffff"];
 
-export default function Reception() {
+export default function Venues() {
   const [sparkles, setSparkles] = useState([]);
 
   const receptionData = {
+    date: "19 December 2026",
     heading: "The Reception",
-    subHeading: "Dinner & Cocktails",
+   
     name: "Param Prime Hills",
     city: "Evening Celebration • 7:30 PM Onwards",
-    // Grand evening reception chandelier & banquet ambiance photo
-    photoSrc:
-      "https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1800&q=85",
+    photoSrc: reception,
     mapUrl:
       "https://www.google.com/maps/search/?api=1&query=Param+Prime+Hills",
   };
 
   useEffect(() => {
     const fontId = "wedding-glitter-fonts";
+
     if (!document.getElementById(fontId)) {
       const link = document.createElement("link");
       link.id = fontId;
       link.rel = "stylesheet";
       link.href =
         "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap";
+
       document.head.appendChild(link);
     }
   }, []);
 
   const spawnSparkles = useCallback((count = 20) => {
     const burst = Array.from({ length: count }, (_, idx) => {
-      const angle = (Math.PI * 2 * idx) / count + (Math.random() - 0.5) * 0.45;
+      const angle =
+        (Math.PI * 2 * idx) / count +
+        (Math.random() - 0.5) * 0.45;
+
       const distance = 36 + Math.random() * 48;
+
       return {
         id: `${Date.now()}-${idx}-${Math.random()}`,
         tx: `${Math.cos(angle) * distance}px`,
         ty: `${Math.sin(angle) * distance - 14}px`,
         size: 4 + Math.random() * 5,
-        color: SPARKLE_COLORS[Math.floor(Math.random() * SPARKLE_COLORS.length)],
+        color:
+          SPARKLE_COLORS[
+            Math.floor(Math.random() * SPARKLE_COLORS.length)
+          ],
         delay: `${Math.random() * 90}ms`,
       };
     });
@@ -50,42 +58,55 @@ export default function Reception() {
 
   useEffect(() => {
     if (!sparkles.length) return;
+
     const timer = setTimeout(() => {
       setSparkles([]);
     }, 850);
+
     return () => clearTimeout(timer);
   }, [sparkles]);
 
   return (
     <section className="relative min-h-screen w-full overflow-hidden flex flex-col items-center justify-between px-5 py-10 sm:py-14 select-none bg-[#04091a]">
-      {/* Sparkle Burst Keyframes */}
+
+      {/* Sparkle Burst Animation */}
+
       <style>{`
         @keyframes buttonSparkleBurst {
           0% {
             opacity: 1;
             transform: translate(-50%, -50%) scale(0.3) rotate(0deg);
           }
+
           65% {
             opacity: 1;
           }
+
           100% {
             opacity: 0;
-            transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.25) rotate(135deg);
+            transform: translate(
+              calc(-50% + var(--tx)),
+              calc(-50% + var(--ty))
+            ) scale(1.25) rotate(135deg);
           }
         }
+
         .animate-sparkle-burst {
-          animation: buttonSparkleBurst 760ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: buttonSparkleBurst 760ms
+            cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
       `}</style>
 
-      {/* Full-Screen Reception Cover Photo */}
+      {/* Reception Background Photo */}
+
       <img
         src={receptionData.photoSrc}
         alt={receptionData.name}
         className="absolute inset-0 h-full w-full object-cover object-center"
       />
 
-      {/* Royal Blue & Midnight Gradient Overlay for Text Clarity */}
+      {/* Royal Blue Gradient Overlay */}
+
       <div
         className="pointer-events-none absolute inset-0"
         style={{
@@ -94,46 +115,78 @@ export default function Reception() {
         }}
       />
 
-      {/* Subtle Full-Viewport Gold Frame */}
+      {/* Golden Frame */}
+
       <div className="pointer-events-none absolute inset-3 sm:inset-5 rounded-[24px] border border-[#f3d078]/30" />
 
-      {/* Top Heading: The Reception */}
+      {/* Top Heading Section */}
+
       <div className="relative z-10 flex flex-col items-center text-center mt-1">
+
+        {/* Reception Date */}
+
+        <div
+          className="text-base sm:text-lg font-semibold tracking-[0.18em] uppercase text-[#f3d078] mb-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]"
+          style={{ fontFamily: "'Cinzel', serif" }}
+        >
+          {receptionData.date}
+        </div>
+
+        {/* Dinner & Cocktails */}
+
         <span
           className="text-[11px] sm:text-xs tracking-[0.35em] uppercase text-[#f3d078] mb-1.5 drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]"
           style={{ fontFamily: "'Cinzel', serif" }}
         >
           {receptionData.subHeading}
         </span>
+
+        {/* The Reception */}
+
         <h1
           className="text-4xl sm:text-5xl font-bold tracking-[0.2em] uppercase text-[#fff6e0] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)]"
           style={{ fontFamily: "'Cinzel', serif" }}
         >
           {receptionData.heading}
         </h1>
+
         <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#f3d078] to-transparent mt-2.5" />
+
       </div>
 
-      {/* Bottom Overlay: Param Prime Hills + Timing + Get Location Button */}
+      {/* Bottom Venue Details */}
+
       <div className="relative z-10 flex flex-col items-center text-center max-w-2xl mx-auto">
+
         <h2
           className="text-5xl sm:text-6xl md:text-7xl text-[#fff6e0] drop-shadow-[0_4px_18px_rgba(0,0,0,0.95)] leading-tight"
-          style={{ fontFamily: "'Great Vibes', cursive", textTransform: "none" }}
+          style={{
+            fontFamily: "'Great Vibes', cursive",
+            textTransform: "none",
+          }}
         >
           {receptionData.name}
         </h2>
+
+        {/* Reception Timing */}
 
         <p
           className="mt-2 inline-flex items-center gap-2 text-xs sm:text-sm tracking-[0.24em] uppercase text-[#f3d078] drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]"
           style={{ fontFamily: "'Cinzel', serif" }}
         >
           <Clock className="w-3.5 h-3.5 text-[#f3d078]" />
+
           <span>{receptionData.city}</span>
         </p>
 
-        {/* Get Location Button with Sparkle Burst on Hover */}
+        {/* Get Location Button */}
+
         <div className="relative mt-7 flex items-center justify-center">
+
+          {/* Golden Sparkles */}
+
           <div className="pointer-events-none absolute inset-0 overflow-visible">
+
             {sparkles.map((sp) => (
               <span
                 key={sp.id}
@@ -155,6 +208,7 @@ export default function Reception() {
                 </svg>
               </span>
             ))}
+
           </div>
 
           <a
@@ -167,11 +221,16 @@ export default function Reception() {
             style={{ fontFamily: "'Cinzel', serif" }}
           >
             <MapPin className="w-4 h-4" />
+
             <span>Get Location</span>
+
             <Sparkles className="w-3.5 h-3.5" />
           </a>
+
         </div>
+
       </div>
+
     </section>
   );
 }
