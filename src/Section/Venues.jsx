@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { MapPin, Sparkles, Clock } from "lucide-react";
+import reception from "../assets/Images/reception.jpg";
 
 const SPARKLE_COLORS = ["#f3d078", "#ffd166", "#fff6e0", "#ffffff"];
 

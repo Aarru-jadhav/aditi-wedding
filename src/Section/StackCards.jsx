@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Sparkles, MapPin, Calendar } from "lucide-react";
-import ganeshpooja from "../assets/Images/ganesh pooja.jpg";
-import chakbhat from "../assets/Images/chak bhat.jpg";
-import mehndi from "../assets/Images/mehndi.jpg";
+import carnival from "../assets/Images/carnival.jpg";
 import sagai from "../assets/Images/sagai.jpg";
 import silverwedding from "../assets/Images/silver weding.jpg";
 import mahilaSangeet from "../assets/Images/mahila sangeet.jpg";
@@ -25,14 +23,14 @@ const COLORS = {
 const DEFAULT_CARDS = [
   {
     id: 1,
-    title: "Karnival",
+    title: "Carnival",
     date: "Dec 13, 2026",
    
     description:
       "Morning turmeric blessings filled with laughter, marigold decor, and family warmth.",
     locationName: "The Ananta Hotel, Udaipur",
     mapUrl: ANANTA_MAP_URL,
-    image: ganeshpooja,
+    image: carnival,
   },
   {
     id: 2,
