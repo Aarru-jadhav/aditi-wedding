@@ -22,24 +22,14 @@ const App = () => {
 
   const audioRef = useRef(null);
   const manuallyPausedRef = useRef(false);
-  const playPendingRef = useRef(false);
 
-  // Start music immediately
-  const ensureMusicPlaying = useCallback(() => {
+  // Start wedding music
+  const startMusic = useCallback(() => {
     const audio = audioRef.current;
 
     if (!audio || manuallyPausedRef.current) return;
 
     audio.volume = 0.45;
-
-    if (!audio.paused) {
-      setIsMusicPlaying(true);
-      return;
-    }
-
-    if (playPendingRef.current) return;
-
-    playPendingRef.current = true;
 
     audio
       .play()
@@ -53,13 +43,10 @@ const App = () => {
       })
       .catch(() => {
         setIsMusicPlaying(false);
-      })
-      .finally(() => {
-        playPendingRef.current = false;
       });
   }, []);
 
-  // Start music as soon as website mounts
+  // Initialize music immediately
   useEffect(() => {
     const audio = audioRef.current;
 
@@ -68,15 +55,17 @@ const App = () => {
     audio.volume = 0.45;
     audio.preload = "auto";
 
-    ensureMusicPlaying();
+    // Attempt autoplay on website load
+    startMusic();
 
-    // Retry as soon as audio is ready
-    const handleAudioReady = () => {
-      ensureMusicPlaying();
-    };
+    // Custom wedding music event
+    window.addEventListener(
+      "weddingMusicStart",
+      startMusic
+    );
 
-    // Start immediately on first user interaction
-    const handleUserInteraction = (event) => {
+    // Start music on first scratch or touch
+    const handleFirstInteraction = (event) => {
       if (
         event.target instanceof Element &&
         event.target.closest("[data-music-toggle]")
@@ -84,69 +73,94 @@ const App = () => {
         return;
       }
 
-      ensureMusicPlaying();
-    };
+      if (manuallyPausedRef.current) return;
 
-    audio.addEventListener(
-      "canplay",
-      handleAudioReady
-    );
+      if (audio.paused) {
+        window.dispatchEvent(
+          new Event("weddingMusicStart")
+        );
+      }
+    };
 
     window.addEventListener(
       "pointerdown",
-      handleUserInteraction,
+      handleFirstInteraction,
+      true
+    );
+
+    window.addEventListener(
+      "pointerup",
+      handleFirstInteraction,
+      true
+    );
+
+    window.addEventListener(
+      "touchstart",
+      handleFirstInteraction,
       true
     );
 
     window.addEventListener(
       "touchend",
-      handleUserInteraction,
+      handleFirstInteraction,
       true
     );
 
     window.addEventListener(
       "click",
-      handleUserInteraction,
+      handleFirstInteraction,
       true
     );
 
     window.addEventListener(
       "keydown",
-      handleUserInteraction,
+      handleFirstInteraction,
       true
     );
 
     return () => {
-      audio.removeEventListener(
-        "canplay",
-        handleAudioReady
+      window.removeEventListener(
+        "weddingMusicStart",
+        startMusic
       );
 
       window.removeEventListener(
         "pointerdown",
-        handleUserInteraction,
+        handleFirstInteraction,
+        true
+      );
+
+      window.removeEventListener(
+        "pointerup",
+        handleFirstInteraction,
+        true
+      );
+
+      window.removeEventListener(
+        "touchstart",
+        handleFirstInteraction,
         true
       );
 
       window.removeEventListener(
         "touchend",
-        handleUserInteraction,
+        handleFirstInteraction,
         true
       );
 
       window.removeEventListener(
         "click",
-        handleUserInteraction,
+        handleFirstInteraction,
         true
       );
 
       window.removeEventListener(
         "keydown",
-        handleUserInteraction,
+        handleFirstInteraction,
         true
       );
     };
-  }, [ensureMusicPlaying]);
+  }, [startMusic]);
 
   // Music ON / OFF button
   const toggleCircleMusic = (e) => {
@@ -156,30 +170,25 @@ const App = () => {
 
     if (!audio) return;
 
-    if (!audio.paused || playPendingRef.current) {
-      manuallyPausedRef.current = true;
-
-      audio.pause();
-
-      setIsMusicPlaying(false);
-    } else {
+    if (audio.paused) {
       manuallyPausedRef.current = false;
-
-      ensureMusicPlaying();
+      startMusic();
+    } else {
+      manuallyPausedRef.current = true;
+      audio.pause();
+      setIsMusicPlaying(false);
     }
   };
 
   // Page1 reveal complete
   const handleRevealComplete = useCallback(() => {
-    ensureMusicPlaying();
-
     setPage1Opened(true);
-  }, [ensureMusicPlaying]);
+  }, []);
 
   return (
     <div className="w-full min-h-screen bg-[#04091a] relative">
 
-      {/* Background Wedding Music */}
+      {/* SINGLE SHARED WEDDING MUSIC PLAYER */}
 
       <audio
         ref={audioRef}
@@ -188,7 +197,7 @@ const App = () => {
         autoPlay
         preload="auto"
         playsInline
-        onPlay={() => {
+        onPlaying={() => {
           if (!manuallyPausedRef.current) {
             setIsMusicPlaying(true);
           }
@@ -196,9 +205,12 @@ const App = () => {
         onPause={() => {
           setIsMusicPlaying(false);
         }}
+        onEnded={() => {
+          setIsMusicPlaying(false);
+        }}
       />
 
-      {/* Floating Music Control Button */}
+      {/* FLOATING MUSIC CONTROL BUTTON */}
 
       <button
         type="button"
@@ -208,6 +220,11 @@ const App = () => {
           isMusicPlaying
             ? "Turn music off"
             : "Turn music on"
+        }
+        title={
+          isMusicPlaying
+            ? "Pause music"
+            : "Play music"
         }
         className={`fixed bottom-5 right-4 sm:right-6 z-50 w-10 h-10 rounded-full border flex items-center justify-center backdrop-blur-md shadow-[0_8px_22px_rgba(0,0,0,0.75)] active:scale-95 transition-all cursor-pointer ${
           isMusicPlaying
@@ -222,13 +239,13 @@ const App = () => {
         )}
       </button>
 
-      {/* Opening Page */}
+      {/* OPENING PAGE */}
 
       <Page1
         onRevealComplete={handleRevealComplete}
       />
 
-      {/* Remaining Wedding Website Sections */}
+      {/* REMAINING WEDDING WEBSITE SECTIONS */}
 
       {page1Opened && (
         <div className="w-full transition-opacity duration-700 opacity-100">
