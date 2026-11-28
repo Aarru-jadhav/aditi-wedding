@@ -21,7 +21,7 @@ export default function Closing({
       link.id = fontId;
       link.rel = "stylesheet";
       link.href =
-        "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&family=Montserrat:wght@400;500;600&family=Pinyon+Script&display=swap";
+        "https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&family=Montserrat:wght@400;500;600&family=Pinyon+Script&display=swap";
       document.head.appendChild(link);
     }
   }, []);
@@ -60,7 +60,7 @@ export default function Closing({
   }, []);
 
   return (
-    <section className="min-h-screen w-full bg-[#04091a] flex flex-col items-center justify-center px-5 py-16 relative overflow-hidden select-none">
+    <section className="min-h-screen w-full bg-[#04091a] flex flex-col items-center justify-between px-5 pt-16 pb-6 relative overflow-hidden select-none">
       <style>{`
         @keyframes shimmerTwinkle {
           0%, 100% {
@@ -177,10 +177,11 @@ export default function Closing({
         ))}
       </div>
 
-      {/* Center Content */}
-      <div className="relative z-10 max-w-[470px] w-full flex flex-col items-center text-center">
-        
+      {/* Top Spacer */}
+      <div className="hidden sm:block" />
 
+      {/* Center Content */}
+      <div className="relative z-10 max-w-[470px] w-full my-auto flex flex-col items-center text-center">
         <p
           className="text-[11px] font-medium tracking-[0.3em] uppercase text-[#f3d078]"
           style={{ fontFamily: "'Montserrat', sans-serif" }}
@@ -273,7 +274,7 @@ export default function Closing({
           {isTied && (
             <p
               className="animate-reveal mt-4 text-base sm:text-lg italic text-[#fff6e0] max-w-[340px]"
-              style={{ fontFamily: "'Lora" }}
+              style={{ fontFamily: "'Lora', serif" }}
             >
               “Come to join us to celebrate—we can’t wait to welcome you with
               open hearts!”
@@ -281,6 +282,25 @@ export default function Closing({
           )}
         </div>
       </div>
+
+      {/* Bottom Studio Credit Tagline */}
+      <footer className="relative z-30 mt-12 pt-4 flex flex-col items-center text-center">
+        <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#f3d078]/40 to-transparent mb-3" />
+        <p
+          className="text-[10px] sm:text-[11px] tracking-[0.24em] uppercase text-[#f8e6be]/75"
+          style={{ fontFamily: "'Cinzel', serif" }}
+        >
+          Design By{" "}
+          <span className="text-[#f3d078] font-semibold">PROFILES</span>{" "}
+          <span className="mx-1.5 text-[#f3d078]/50">•</span>
+          <a
+            href="tel:9425064293"
+            className="text-[#fff6e0]/85 hover:text-[#f3d078] transition-colors tracking-[0.18em]"
+          >
+            9425064293
+          </a>
+        </p>
+      </footer>
     </section>
   );
 }
