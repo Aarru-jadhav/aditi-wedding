@@ -1,10 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Sparkles, MapPin, Calendar } from "lucide-react";
+import { Sparkles, MapPin, Calendar, Clock } from "lucide-react";
+
 import carnival from "../assets/Images/carnival.jpg";
 import sagai from "../assets/Images/sagai.jpg";
 import silverwedding from "../assets/Images/silver weding.jpg";
-import mahilaSangeet from "../assets/Images/mahila sangeet.jpg";
+import sangeet from "../assets/Images/sangeet.jpg";
 import galandinner from "../assets/Images/galadinner.jpg";
+import samela from "../assets/Images/samela.png";
 
 const ANANTA_MAP_URL =
   "https://www.google.com/maps/search/?api=1&query=The+Ananta+Udaipur+Kodiyat+Road";
@@ -20,12 +22,14 @@ const COLORS = {
   shadow: "rgba(0, 0, 0, 0.88)",
 };
 
+// EVENT DETAILS
+
 const DEFAULT_CARDS = [
   {
     id: 1,
     title: "Carnival",
     date: "Dec 13, 2026",
-   
+    time: "1 PM",
     description:
       "Morning turmeric blessings filled with laughter, marigold decor, and family warmth.",
     locationName: "The Ananta Hotel, Udaipur",
@@ -36,7 +40,7 @@ const DEFAULT_CARDS = [
     id: 2,
     title: "Engagement",
     date: "Dec 13, 2026",
-  
+    time: "5 PM",
     description:
       "Intricate henna designs, folk songs, vibrant colors, and joyful celebrations.",
     locationName: "The Ananta Hotel, Udaipur",
@@ -45,32 +49,32 @@ const DEFAULT_CARDS = [
   },
   {
     id: 3,
-    title: "Mahila Sangeet",
+    title: "Sangeet",
     date: "Dec 13, 2026",
-   
+    time: "7.30 PM",
     description:
       "An evening of choreographed dances, music, lights, and unforgettable performances.",
     locationName: "The Ananta Hotel, Udaipur",
     mapUrl: ANANTA_MAP_URL,
-    image: mahilaSangeet,
+    image: sangeet,
   },
   {
     id: 4,
     title: "Samela",
     date: "Dec 14, 2026",
-    
+    time: "1 PM",
     description:
       "A lively procession with dhol beats, dancing guests, and festive celebration.",
     locationName: "The Ananta Hotel, Udaipur",
     mapUrl: ANANTA_MAP_URL,
-    image:
-      "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1000&q=85",
+    image: samela,
+      
   },
   {
     id: 5,
     title: "The Silver Wedding",
     date: "Dec 14, 2026",
-    
+    time: "2.30 PM",
     description:
       "Sacred vows around the holy fire surrounded by family blessings and tradition.",
     locationName: "The Ananta Hotel, Udaipur",
@@ -81,7 +85,7 @@ const DEFAULT_CARDS = [
     id: 6,
     title: "Gala Dinner",
     date: "Dec 14, 2026",
-    
+    time: "7.30 PM",
     description:
       "Sacred vows around the holy fire surrounded by family blessings and tradition.",
     locationName: "The Ananta Hotel, Udaipur",
@@ -89,6 +93,26 @@ const DEFAULT_CARDS = [
     image: galandinner,
   },
 ];
+
+// DATE AND TIME TAG STYLE
+
+const cardTagStyle = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: "5px",
+  padding: "4px 9px",
+  fontSize: "9px",
+  fontWeight: 600,
+  letterSpacing: "0.1em",
+  textTransform: "uppercase",
+  color: COLORS.gold,
+  background: "rgba(4, 9, 26, 0.78)",
+  border: `1px solid ${COLORS.goldMuted}`,
+  borderRadius: "999px",
+  pointerEvents: "none",
+  fontFamily: "'Cinzel', serif",
+  whiteSpace: "nowrap",
+};
 
 export default function StackCards({
   cards = DEFAULT_CARDS,
@@ -99,14 +123,17 @@ export default function StackCards({
   arcDepth = 58,
   pauseOnHover = true,
   showDate = true,
+  showTime = true,
 }) {
   const count = cards.length;
+
   const progressRef = useRef((count - 1) / 2);
   const targetRef = useRef(null);
   const directionRef = useRef(1);
   const lastTimeRef = useRef(null);
   const rafRef = useRef(null);
   const isPausedRef = useRef(false);
+
   const dragStateRef = useRef({
     dragging: false,
     startX: 0,
@@ -114,19 +141,30 @@ export default function StackCards({
   });
 
   const [tick, setTick] = useState(0);
-  const [activeIndex, setActiveIndex] = useState(Math.floor((count - 1) / 2));
+
+  const [activeIndex, setActiveIndex] = useState(
+    Math.floor((count - 1) / 2)
+  );
+
+  // GOOGLE FONTS
 
   useEffect(() => {
     const fontId = "wedding-glitter-fonts";
+
     if (!document.getElementById(fontId)) {
       const link = document.createElement("link");
+
       link.id = fontId;
       link.rel = "stylesheet";
+
       link.href =
         "https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap";
+
       document.head.appendChild(link);
     }
   }, []);
+
+  // CAROUSEL ANIMATION
 
   useEffect(() => {
     if (!count) return;
@@ -138,23 +176,34 @@ export default function StackCards({
       if (lastTimeRef.current == null) {
         lastTimeRef.current = timestamp;
       }
+
       const delta = timestamp - lastTimeRef.current;
+
       lastTimeRef.current = timestamp;
 
-      if (targetRef.current !== null && !dragStateRef.current.dragging) {
-        const diff = targetRef.current - progressRef.current;
+      if (
+        targetRef.current !== null &&
+        !dragStateRef.current.dragging
+      ) {
+        const diff =
+          targetRef.current - progressRef.current;
+
         if (Math.abs(diff) < 0.008) {
           progressRef.current = targetRef.current;
           targetRef.current = null;
         } else {
-          progressRef.current += diff * Math.min(1, delta * 0.01);
+          progressRef.current +=
+            diff * Math.min(1, delta * 0.01);
         }
       } else if (
         !isPausedRef.current &&
         !dragStateRef.current.dragging &&
         count > 1
       ) {
-        let next = progressRef.current + delta * speed * directionRef.current;
+        let next =
+          progressRef.current +
+          delta * speed * directionRef.current;
+
         if (next >= maxPos) {
           next = maxPos;
           directionRef.current = -1;
@@ -162,34 +211,51 @@ export default function StackCards({
           next = minPos;
           directionRef.current = 1;
         }
+
         progressRef.current = next;
       }
 
       let closestIdx = 0;
       let minDist = Infinity;
+
       for (let i = 0; i < count; i++) {
-        const dist = Math.abs(i - progressRef.current);
+        const dist = Math.abs(
+          i - progressRef.current
+        );
+
         if (dist < minDist) {
           minDist = dist;
           closestIdx = i;
         }
       }
 
-      setActiveIndex((prev) => (prev !== closestIdx ? closestIdx : prev));
+      setActiveIndex((prev) =>
+        prev !== closestIdx ? closestIdx : prev
+      );
+
       setTick((t) => (t + 1) % 1000000);
 
-      rafRef.current = requestAnimationFrame(animate);
+      rafRef.current =
+        requestAnimationFrame(animate);
     };
 
-    rafRef.current = requestAnimationFrame(animate);
+    rafRef.current =
+      requestAnimationFrame(animate);
+
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+
       lastTimeRef.current = null;
     };
   }, [count, speed]);
 
+  // DRAG FUNCTIONALITY
+
   const handlePointerDown = (e) => {
     targetRef.current = null;
+
     dragStateRef.current = {
       dragging: true,
       startX: e.clientX,
@@ -199,11 +265,19 @@ export default function StackCards({
 
   const handlePointerMove = (e) => {
     if (!dragStateRef.current.dragging) return;
-    const dx = e.clientX - dragStateRef.current.startX;
+
+    const dx =
+      e.clientX - dragStateRef.current.startX;
+
     const next = Math.min(
-      Math.max(0, dragStateRef.current.startProgress - dx / spacing),
+      Math.max(
+        0,
+        dragStateRef.current.startProgress -
+          dx / spacing
+      ),
       Math.max(0, count - 1)
     );
+
     progressRef.current = next;
   };
 
@@ -215,7 +289,8 @@ export default function StackCards({
     targetRef.current = idx;
   };
 
-  const activeCard = cards[activeIndex] || cards[0];
+  const activeCard =
+    cards[activeIndex] || cards[0];
 
   return (
     <main
@@ -235,13 +310,21 @@ export default function StackCards({
         position: "relative",
       }}
       onMouseEnter={() => {
-        if (pauseOnHover) isPausedRef.current = true;
+        if (pauseOnHover) {
+          isPausedRef.current = true;
+        }
       }}
       onMouseLeave={() => {
-        if (pauseOnHover) isPausedRef.current = false;
+        if (pauseOnHover) {
+          isPausedRef.current = false;
+        }
+
         dragStateRef.current.dragging = false;
       }}
     >
+
+      {/* ROYAL BLUE BACKGROUND */}
+
       <div
         aria-hidden="true"
         style={{
@@ -252,6 +335,8 @@ export default function StackCards({
             "radial-gradient(circle at 50% 45%, rgba(29, 78, 216, 0.36) 0%, rgba(9, 24, 61, 0.92) 58%, rgba(4, 9, 26, 1) 100%)",
         }}
       />
+
+      {/* GOLDEN SPOTLIGHT */}
 
       <div
         aria-hidden="true"
@@ -265,6 +350,8 @@ export default function StackCards({
         }}
       />
 
+      {/* EVENT HEADER */}
+
       <header
         style={{
           position: "relative",
@@ -276,6 +363,9 @@ export default function StackCards({
           padding: "0 12px",
         }}
       >
+
+        {/* EVENT COUNTER */}
+
         <div
           style={{
             display: "inline-flex",
@@ -294,20 +384,32 @@ export default function StackCards({
             fontFamily: "'Cinzel', serif",
           }}
         >
-          <Sparkles size={12} color={COLORS.gold} />
+          <Sparkles
+            size={12}
+            color={COLORS.gold}
+          />
+
           <span>
-            {String(activeIndex + 1).padStart(2, "0")} /{" "}
-            {String(count).padStart(2, "0")}
+            {String(activeIndex + 1).padStart(
+              2,
+              "0"
+            )}{" "}
+            / {String(count).padStart(2, "0")}
           </span>
+
           {activeCard?.dateTag && (
             <>
-              <span style={{ opacity: 0.45 }}>•</span>
+              <span style={{ opacity: 0.45 }}>
+                •
+              </span>
+
               <span>{activeCard.dateTag}</span>
             </>
           )}
         </div>
 
-        {/* Dedicated Event Date Pill */}
+        {/* EVENT DATE TAG ABOVE HEADING */}
+
         {showDate && activeCard?.date && (
           <div
             style={{
@@ -333,11 +435,17 @@ export default function StackCards({
                 fontFamily: "'Cinzel', serif",
               }}
             >
-              <Calendar size={12} color={COLORS.gold} />
+              <Calendar
+                size={12}
+                color={COLORS.gold}
+              />
+
               <span>{activeCard.date}</span>
             </span>
           </div>
         )}
+
+        {/* EVENT TITLE */}
 
         <h1
           style={{
@@ -346,13 +454,16 @@ export default function StackCards({
             fontWeight: 400,
             lineHeight: 1.15,
             color: COLORS.creamText,
-            textShadow: "0 2px 14px rgba(243, 208, 120, 0.4)",
+            textShadow:
+              "0 2px 14px rgba(243, 208, 120, 0.4)",
             fontFamily: "'Great Vibes', cursive",
             textTransform: "none",
           }}
         >
           {activeCard?.title}
         </h1>
+
+        {/* GOLDEN DIVIDER */}
 
         <div
           style={{
@@ -364,6 +475,8 @@ export default function StackCards({
           }}
         />
 
+        {/* EVENT DESCRIPTION */}
+
         <p
           style={{
             margin: "0 auto",
@@ -372,12 +485,15 @@ export default function StackCards({
             fontStyle: "italic",
             lineHeight: 1.5,
             color: COLORS.bodyMuted,
-            fontFamily: "'Cormorant Garamond', serif",
+            fontFamily:
+              "'Cormorant Garamond', serif",
           }}
         >
           {activeCard?.description}
         </p>
       </header>
+
+      {/* CAROUSEL CONTAINER */}
 
       <div
         onPointerDown={handlePointerDown}
@@ -388,12 +504,19 @@ export default function StackCards({
           position: "relative",
           zIndex: 20,
           width: "100%",
-          height: `${cardHeight + arcDepth * 2 + 44}px`,
+          height: `${
+            cardHeight + arcDepth * 2 + 44
+          }px`,
           overflow: "hidden",
-          cursor: dragStateRef.current.dragging ? "grabbing" : "grab",
+          cursor: dragStateRef.current.dragging
+            ? "grabbing"
+            : "grab",
           touchAction: "pan-y",
         }}
       >
+
+        {/* TOP CURVED MASK */}
+
         <div
           aria-hidden="true"
           style={{
@@ -410,6 +533,8 @@ export default function StackCards({
           }}
         />
 
+        {/* EVENT CARDS */}
+
         <div
           data-frame={tick}
           style={{
@@ -419,21 +544,37 @@ export default function StackCards({
           }}
         >
           {cards.map((card, index) => {
-            const offset = index - progressRef.current;
+            const offset =
+              index - progressRef.current;
+
             const absOffset = Math.abs(offset);
+
             const isCenter = absOffset < 0.45;
 
             const x = offset * spacing;
-            const y = Math.pow(offset, 2) * (arcDepth * 0.28);
+
+            const y =
+              Math.pow(offset, 2) *
+              (arcDepth * 0.28);
+
             const rotateZ = offset * 2.6;
-            const scale = Math.max(0.85, 1.05 - absOffset * 0.048);
-            const zIndex = Math.round(25 - absOffset * 3);
+
+            const scale = Math.max(
+              0.85,
+              1.05 - absOffset * 0.048
+            );
+
+            const zIndex = Math.round(
+              25 - absOffset * 3
+            );
 
             return (
               <div
                 key={card.id ?? index}
                 onClick={() => {
-                  if (!isCenter) jumpToCard(index);
+                  if (!isCenter) {
+                    jumpToCard(index);
+                  }
                 }}
                 style={{
                   position: "absolute",
@@ -450,15 +591,21 @@ export default function StackCards({
                   overflow: "hidden",
                   boxShadow: isCenter
                     ? `0 24px 50px ${COLORS.shadow}, 0 0 28px rgba(243, 208, 120, 0.35)`
-                    : `0 14px 30px rgba(0, 0, 0, 0.65)`,
+                    : "0 14px 30px rgba(0, 0, 0, 0.65)",
                   border: `1.5px solid ${
-                    isCenter ? COLORS.gold : COLORS.goldMuted
+                    isCenter
+                      ? COLORS.gold
+                      : COLORS.goldMuted
                   }`,
                   background: COLORS.cardNavy,
                   willChange: "transform",
-                  transition: "box-shadow 0.3s ease, border-color 0.3s ease",
+                  transition:
+                    "box-shadow 0.3s ease, border-color 0.3s ease",
                 }}
               >
+
+                {/* EVENT PHOTOGRAPH */}
+
                 <img
                   src={card.image}
                   alt={card.title}
@@ -468,10 +615,14 @@ export default function StackCards({
                     height: "100%",
                     objectFit: "cover",
                     display: "block",
-                    filter: isCenter ? "brightness(1)" : "brightness(0.72)",
+                    filter: isCenter
+                      ? "brightness(1)"
+                      : "brightness(0.72)",
                     transition: "filter 0.35s ease",
                   }}
                 />
+
+                {/* INNER GOLDEN FRAME */}
 
                 <div
                   aria-hidden="true"
@@ -489,6 +640,8 @@ export default function StackCards({
                   }}
                 />
 
+                {/* IMAGE GRADIENT OVERLAY */}
+
                 <div
                   style={{
                     position: "absolute",
@@ -498,6 +651,8 @@ export default function StackCards({
                     pointerEvents: "none",
                   }}
                 />
+
+                {/* CARD BOTTOM DETAILS */}
 
                 <div
                   style={{
@@ -511,31 +666,47 @@ export default function StackCards({
                     gap: "8px",
                   }}
                 >
-                  {/* Date badge inside the card */}
-                  {showDate && card.date && (
-                    <div
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        alignSelf: "flex-start",
-                        gap: "5px",
-                        padding: "3px 9px",
-                        fontSize: "9px",
-                        fontWeight: 600,
-                        letterSpacing: "0.14em",
-                        textTransform: "uppercase",
-                        color: COLORS.gold,
-                        background: "rgba(4, 9, 26, 0.78)",
-                        border: `1px solid ${COLORS.goldMuted}`,
-                        borderRadius: "999px",
-                        pointerEvents: "none",
-                        fontFamily: "'Cinzel', serif",
-                      }}
-                    >
-                      <Calendar size={10} color={COLORS.gold} />
-                      <span>{card.date}</span>
-                    </div>
-                  )}
+
+                  {/* DATE AND TIME TAGS */}
+
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                      gap: "6px",
+                    }}
+                  >
+
+                    {/* DATE TAG */}
+
+                    {showDate && card.date && (
+                      <div style={cardTagStyle}>
+                        <Calendar
+                          size={10}
+                          color={COLORS.gold}
+                        />
+
+                        <span>{card.date}</span>
+                      </div>
+                    )}
+
+                    {/* TIME TAG */}
+
+                    {showTime && card.time && (
+                      <div style={cardTagStyle}>
+                        <Clock
+                          size={10}
+                          color={COLORS.gold}
+                        />
+
+                        <span>{card.time}</span>
+                      </div>
+                    )}
+
+                  </div>
+
+                  {/* EVENT NAME */}
 
                   <div
                     style={{
@@ -552,13 +723,19 @@ export default function StackCards({
                     {card.title}
                   </div>
 
+                  {/* LOCATION BUTTON */}
+
                   {card.mapUrl && (
                     <a
                       href={card.mapUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      onPointerDown={(e) => e.stopPropagation()}
-                      onClick={(e) => e.stopPropagation()}
+                      onPointerDown={(e) =>
+                        e.stopPropagation()
+                      }
+                      onClick={(e) =>
+                        e.stopPropagation()
+                      }
                       style={{
                         display: "inline-flex",
                         alignItems: "center",
@@ -570,18 +747,23 @@ export default function StackCards({
                         letterSpacing: "0.12em",
                         textTransform: "uppercase",
                         textDecoration: "none",
-                        color: isCenter ? "#071330" : COLORS.gold,
+                        color: isCenter
+                          ? "#071330"
+                          : COLORS.gold,
                         background: isCenter
                           ? "linear-gradient(90deg, #c8963e, #f3d078, #c8963e)"
                           : "rgba(7, 19, 48, 0.85)",
                         border: `1px solid ${COLORS.goldMuted}`,
                         borderRadius: "999px",
                         cursor: "pointer",
-                        boxShadow: "0 4px 14px rgba(0, 0, 0, 0.4)",
-                        fontFamily: "'Cinzel', serif",
+                        boxShadow:
+                          "0 4px 14px rgba(0, 0, 0, 0.4)",
+                        fontFamily:
+                          "'Cinzel', serif",
                       }}
                     >
                       <MapPin size={12} />
+
                       <span
                         style={{
                           overflow: "hidden",
@@ -589,15 +771,19 @@ export default function StackCards({
                           whiteSpace: "nowrap",
                         }}
                       >
-                        {card.locationName || "View on Map"}
+                        {card.locationName ||
+                          "View on Map"}
                       </span>
                     </a>
                   )}
+
                 </div>
               </div>
             );
           })}
         </div>
+
+        {/* BOTTOM CURVED MASK */}
 
         <div
           aria-hidden="true"
@@ -614,7 +800,10 @@ export default function StackCards({
             pointerEvents: "none",
           }}
         />
+
       </div>
+
+      {/* EVENT NAVIGATION BUTTONS */}
 
       <nav
         aria-label="Wedding Events"
@@ -631,6 +820,7 @@ export default function StackCards({
       >
         {cards.map((card, idx) => {
           const isActive = idx === activeIndex;
+
           return (
             <button
               key={card.id ?? idx}
@@ -644,12 +834,16 @@ export default function StackCards({
                 textTransform: "uppercase",
                 borderRadius: "999px",
                 border: `1px solid ${
-                  isActive ? COLORS.gold : COLORS.goldMuted
+                  isActive
+                    ? COLORS.gold
+                    : COLORS.goldMuted
                 }`,
                 background: isActive
                   ? "rgba(243, 208, 120, 0.2)"
                   : "rgba(7, 19, 48, 0.65)",
-                color: isActive ? COLORS.creamText : COLORS.gold,
+                color: isActive
+                  ? COLORS.creamText
+                  : COLORS.gold,
                 cursor: "pointer",
                 transition: "all 0.25s ease",
                 fontFamily: "'Cinzel', serif",
@@ -660,6 +854,7 @@ export default function StackCards({
           );
         })}
       </nav>
+
     </main>
   );
 }
