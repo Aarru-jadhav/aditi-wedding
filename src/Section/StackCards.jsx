@@ -27,7 +27,7 @@ const COLORS = {
 const DEFAULT_CARDS = [
   {
     id: 1,
-    title: "Carnival",
+    title: "Tangerine Soiree",
     date: "Dec 13, 2026",
     time: "1 PM",
     description:
@@ -49,7 +49,7 @@ const DEFAULT_CARDS = [
   },
   {
     id: 3,
-    title: "Sangeet",
+    title: "The Starry Night",
     date: "Dec 13, 2026",
     time: "7.30 PM",
     description:
@@ -83,7 +83,7 @@ const DEFAULT_CARDS = [
   },
   {
     id: 6,
-    title: "Gala Dinner",
+    title: "French Gala Dinner",
     date: "Dec 14, 2026",
     time: "7.30 PM",
     description:
